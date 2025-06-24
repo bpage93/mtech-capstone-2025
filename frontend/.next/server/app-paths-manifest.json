@@ -1,4 +1,4 @@
 {
-  "/student-canvas/page": "app/student-canvas/page.js",
-  "/page": "app/page.js"
+  "/page": "app/page.js",
+  "/student-canvas/page": "app/student-canvas/page.js"
 }
