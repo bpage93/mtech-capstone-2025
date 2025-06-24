@@ -34,11 +34,7 @@ export default function Home() {
 
     const router = useRouter();
 
-    const handleSignup = () => {
-        router.push("/student-canvas");
-    };
-
-    const handleLogin = () => {
+    const handleStudentBtn = () => {
         router.push("/student-canvas");
     };
 
@@ -56,7 +52,7 @@ export default function Home() {
             <Paper
                 elevation={10}
                 sx={{
-                    width: 360,
+                    width: 500,
                     p: 4,
                     borderRadius: 4,
                     background: "rgba(0, 0, 0, 0.7)",
@@ -166,7 +162,7 @@ export default function Home() {
 
                     <Button
                         variant="contained"
-                        onClick={handleSignup}
+                        onClick={handleStudentBtn}
                         sx={{
                             mt: 2,
                             py: 1.5,
