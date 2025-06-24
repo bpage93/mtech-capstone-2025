@@ -42,7 +42,7 @@ export default function Home() {
         <Box
             sx={{
                 minHeight: "100vh",
-                background: "linear-gradient(to top, #1f003b, #000000)",
+                background: "linear-gradient(to right, #1f003b, #000000)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",

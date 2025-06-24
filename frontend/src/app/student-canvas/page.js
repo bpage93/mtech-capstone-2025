@@ -6,7 +6,7 @@ export default function StudentCanvasPage() {
                 padding: "2rem",
                 fontSize: "1.5rem",
                 color: "#fff",
-                background: "#111",
+                background: "linear-gradient(to right, #1f003b, #000000)",
                 minHeight: "100vh",
             }}
         >
