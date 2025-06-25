@@ -60,20 +60,37 @@ export default function Home() {
                     color: "white",
                 }}
             >
-                <ToggleButtonGroup
-                    value={mode}
-                    exclusive
-                    onChange={handleToggle}
-                    fullWidth
-                    sx={{ mb: 2 }}
-                >
-                    <ToggleButton value="signup" sx={{ color: "white" }}>
-                        Sign Up
-                    </ToggleButton>
-                    <ToggleButton value="login" sx={{ color: "white" }}>
-                        Sign In
-                    </ToggleButton>
-                </ToggleButtonGroup>
+                <div className="flex justify-center">
+                    <ToggleButtonGroup
+                        value={mode}
+                        exclusive
+                        onChange={handleToggle}
+                        fullWidth
+                        sx={{ mb: 2 }}
+                    >
+                        <ToggleButton value="signup" sx={{ color: "white" }}>
+                            Teacher
+                        </ToggleButton>
+                        <ToggleButton value="login" sx={{ color: "white" }}>
+                            Student
+                        </ToggleButton>
+                    </ToggleButtonGroup>
+
+                    <ToggleButtonGroup
+                        value={mode}
+                        exclusive
+                        onChange={handleToggle}
+                        fullWidth
+                        sx={{ mb: 2 }}
+                    >
+                        <ToggleButton value="signup" sx={{ color: "white" }}>
+                            Sign Up
+                        </ToggleButton>
+                        <ToggleButton value="login" sx={{ color: "white" }}>
+                            Sign In
+                        </ToggleButton>
+                    </ToggleButtonGroup>
+                </div>
 
                 <Typography variant="h6" sx={{ mb: 2 }}>
                     {mode === "signup"
