@@ -27,12 +27,16 @@ import { useState } from "react";
 export default function Home() {
     const [mode, setMode] = useState("signup");
     const [showPassword, setShowPassword] = useState(false);
+    const [role, setRole] = useState("student");
+    const router = useRouter();
 
     const handleToggle = (_, newMode) => {
         if (newMode) setMode(newMode);
     };
 
-    const router = useRouter();
+    const handleUserToggle = (newRole) => {
+        if (newRole) setRole(newRole);
+    };
 
     const handleStudentBtn = () => {
         router.push("/student-canvas");
@@ -62,16 +66,16 @@ export default function Home() {
             >
                 <div className="flex justify-center">
                     <ToggleButtonGroup
-                        value={mode}
+                        value={role}
                         exclusive
-                        onChange={handleToggle}
+                        onChange={(_, newRole) => newRole && setRole(newRole)}
                         fullWidth
                         sx={{ mb: 2 }}
                     >
-                        <ToggleButton value="signup" sx={{ color: "white" }}>
+                        <ToggleButton value="teacher" sx={{ color: "white" }}>
                             Teacher
                         </ToggleButton>
-                        <ToggleButton value="login" sx={{ color: "white" }}>
+                        <ToggleButton value="student" sx={{ color: "white" }}>
                             Student
                         </ToggleButton>
                     </ToggleButtonGroup>
@@ -79,7 +83,7 @@ export default function Home() {
                     <ToggleButtonGroup
                         value={mode}
                         exclusive
-                        onChange={handleToggle}
+                        onChange={(_, newMode) => newMode && setMode(newMode)}
                         fullWidth
                         sx={{ mb: 2 }}
                     >
