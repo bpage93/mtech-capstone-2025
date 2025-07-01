@@ -1,4 +1,4 @@
-// frontend/src/app/student-canvas/page.js
+// frontend/src/app/canvas/student/page.js
 export default function StudentCanvasPage() {
     return (
         <div
