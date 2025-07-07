@@ -39,7 +39,7 @@ export default function Home() {
     };
 
     const handleStudentBtn = () => {
-        router.push("/student-canvas");
+        router.push("/canvas/student");
     };
 
     return (
