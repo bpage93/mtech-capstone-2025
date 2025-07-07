@@ -46,7 +46,9 @@ export default function Home() {
         <Box
             sx={{
                 minHeight: "100vh",
-                background: "linear-gradient(to right, #1f003b, #000000)",
+                background: "linear-gradient(270deg, #1f003b, #000000)",
+                backgroundSize: "400% 400%",
+                animation: "bg-pan 15s ease infinite",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
