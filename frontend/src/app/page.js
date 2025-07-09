@@ -1,7 +1,7 @@
-// frontend/src/app/page.js
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import {
     Box,
@@ -22,33 +22,63 @@ import {
     Visibility,
     VisibilityOff,
 } from "@mui/icons-material";
-import { useState } from "react";
 
 export default function Home() {
-    const [mode, setMode] = useState("signup");
-    const [showPassword, setShowPassword] = useState(false);
-    const [role, setRole] = useState("student");
     const router = useRouter();
+
+    const [mode, setMode] = useState("signup"); // signup or login
+    const [role, setRole] = useState("student"); // student or teacher
+    const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
     const handleToggle = (_, newMode) => {
         if (newMode) setMode(newMode);
     };
 
-    const handleUserToggle = (newRole) => {
+    const handleRoleToggle = (_, newRole) => {
         if (newRole) setRole(newRole);
     };
 
-    const handleStudentBtn = () => {
-        router.push("/canvas/student");
+    const handleLogin = async () => {
+        try {
+            const res = await fetch("http://localhost:5000/api/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await res.json();
+
+            if (!data.token) {
+                alert("Login failed.");
+                return;
+            }
+
+            localStorage.setItem("token", data.token);
+            const payload = JSON.parse(atob(data.token.split(".")[1]));
+            const userRole = payload.role;
+
+            if (userRole === "student") {
+                router.push("/canvas/student");
+            } else if (userRole === "teacher") {
+                router.push("/canvas/teacher");
+            } else {
+                alert("Unknown role.");
+            }
+        } catch (err) {
+            console.error("Login error:", err);
+            alert("Something went wrong.");
+        }
     };
 
     return (
         <Box
             sx={{
                 minHeight: "100vh",
-                background: "linear-gradient(270deg, #1f003b, #000000)",
-                backgroundSize: "400% 400%",
-                animation: "bg-pan 15s ease infinite",
+                background: "linear-gradient(to right, #1f003b, #000000)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -66,37 +96,35 @@ export default function Home() {
                     color: "white",
                 }}
             >
-                <div className="flex justify-center">
-                    <ToggleButtonGroup
-                        value={role}
-                        exclusive
-                        onChange={(_, newRole) => newRole && setRole(newRole)}
-                        fullWidth
-                        sx={{ mb: 2 }}
-                    >
-                        <ToggleButton value="teacher" sx={{ color: "white" }}>
-                            Teacher
-                        </ToggleButton>
-                        <ToggleButton value="student" sx={{ color: "white" }}>
-                            Student
-                        </ToggleButton>
-                    </ToggleButtonGroup>
+                <ToggleButtonGroup
+                    value={role}
+                    exclusive
+                    onChange={handleRoleToggle}
+                    fullWidth
+                    sx={{ mb: 2 }}
+                >
+                    <ToggleButton value="teacher" sx={{ color: "white" }}>
+                        Teacher
+                    </ToggleButton>
+                    <ToggleButton value="student" sx={{ color: "white" }}>
+                        Student
+                    </ToggleButton>
+                </ToggleButtonGroup>
 
-                    <ToggleButtonGroup
-                        value={mode}
-                        exclusive
-                        onChange={(_, newMode) => newMode && setMode(newMode)}
-                        fullWidth
-                        sx={{ mb: 2 }}
-                    >
-                        <ToggleButton value="signup" sx={{ color: "white" }}>
-                            Sign Up
-                        </ToggleButton>
-                        <ToggleButton value="login" sx={{ color: "white" }}>
-                            Sign In
-                        </ToggleButton>
-                    </ToggleButtonGroup>
-                </div>
+                <ToggleButtonGroup
+                    value={mode}
+                    exclusive
+                    onChange={handleToggle}
+                    fullWidth
+                    sx={{ mb: 2 }}
+                >
+                    <ToggleButton value="signup" sx={{ color: "white" }}>
+                        Sign Up
+                    </ToggleButton>
+                    <ToggleButton value="login" sx={{ color: "white" }}>
+                        Sign In
+                    </ToggleButton>
+                </ToggleButtonGroup>
 
                 <Typography variant="h6" sx={{ mb: 2 }}>
                     {mode === "signup"
@@ -133,6 +161,8 @@ export default function Home() {
                         fullWidth
                         label="Email"
                         variant="filled"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
@@ -157,6 +187,8 @@ export default function Home() {
                         label="Password"
                         type={showPassword ? "text" : "password"}
                         variant="filled"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         InputProps={{
                             endAdornment: (
                                 <InputAdornment position="end">
@@ -185,7 +217,7 @@ export default function Home() {
 
                     <Button
                         variant="contained"
-                        onClick={handleStudentBtn}
+                        onClick={handleLogin}
                         sx={{
                             mt: 2,
                             py: 1.5,
@@ -197,13 +229,7 @@ export default function Home() {
                         {mode === "signup" ? "Create an account" : "Login"}
                     </Button>
 
-                    <Divider
-                        sx={{
-                            my: 2,
-                        }}
-                    >
-                        OR SIGN IN WITH
-                    </Divider>
+                    <Divider sx={{ my: 2 }}>OR SIGN IN WITH</Divider>
 
                     <Box sx={{ display: "flex", gap: 2 }}>
                         <Button
