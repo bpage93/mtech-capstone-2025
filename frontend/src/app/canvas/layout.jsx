@@ -1,7 +1,22 @@
+'use client';
 import { Avatar } from "@mui/material";
 import NavigationButton from "./components/NavigationButton";
+import { useEffect, useState } from "react";
 
 export default function ({ children }) {
+    const [pageTitle, setPageTitle] = useState('');
+    useEffect(() => {
+        const path = window.location.pathname.trim();
+        if (path.endsWith("student")) {
+            setPageTitle("Student Dashboard");
+        } else if (path.endsWith("teacher")) {
+            setPageTitle("Teacher Dashboard");
+        } else if (path.endsWith("admin")) {
+            setPageTitle("Admin Dashboard");
+        } else {
+            setPageTitle("No Title");
+        }
+    }, []);
 	return (
 		<div className="w-full h-full min-h-dvh flex p-4 gap-x-5 text-white bg-gradient-to-r from-[#450082] to-[#12001e]">
 			<div className="flex flex-col w-70 p-5 gap-y-4 bg-black/20 rounded-2xl">
@@ -14,7 +29,7 @@ export default function ({ children }) {
 				<NavigationButton>Profile</NavigationButton>
 			</div>
 			<div className="flex flex-col gap-y-5 w-full">
-				<h2 className="flex items-center text-2xl font-bold p-3 bg-black/20 rounded-2xl">Student Dashboard</h2>
+				<h2 className="flex items-center text-2xl font-bold p-3 bg-black/20 rounded-2xl">{pageTitle}</h2>
 				<div>{children}</div>
 			</div>
 		</div>
