@@ -1,6 +1,7 @@
 // frontend/src/app/canvas/teacher/page.js
 "use client";
 
+import { useTitleContext } from "../contexts/TitleContext";
 import { useState, useEffect } from "react";
 import {
     Box,
@@ -18,6 +19,11 @@ export default function TeacherCanvasPage() {
     const [courseDescription, setCourseDescription] = useState("");
     const [courseCredits, setCourseCredits] = useState("");
     const [courses, setCourses] = useState([]);
+    const { updateTitle } = useTitleContext();
+
+    useEffect(() => {
+        updateTitle("Teacher Dashboard");
+    });
 
     // Load courses from localStorage on first load
     useEffect(() => {

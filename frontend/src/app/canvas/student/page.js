@@ -3,9 +3,11 @@
 
 import { useEffect, useState } from "react";
 import { Box, Card, CardContent, Typography, Paper } from "@mui/material";
+import { useTitleContext } from "../contexts/TitleContext";
 
 export default function StudentCanvasPage() {
     const [courses, setCourses] = useState([]);
+    const { updateTitle } = useTitleContext();
 
     useEffect(() => {
         const storedCourses = localStorage.getItem("allCourses");
@@ -13,6 +15,10 @@ export default function StudentCanvasPage() {
             setCourses(JSON.parse(storedCourses));
         }
     }, []);
+
+    useEffect(() => {
+        updateTitle("Student Dashboard");
+    }, [updateTitle]);
 
     return (
         <Box className="min-h-screen p-6 bg-gradient-to-br from-slate-900 to-black text-white">
