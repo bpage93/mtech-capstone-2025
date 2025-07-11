@@ -1,8 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-
 import {
     Box,
     Button,
@@ -22,16 +19,16 @@ import {
     Visibility,
     VisibilityOff,
 } from "@mui/icons-material";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-    const router = useRouter();
-
-    const [mode, setMode] = useState("signup"); // signup or login
-    const [role, setRole] = useState("student"); // student or teacher
-    const [showPassword, setShowPassword] = useState(false);
+    const [mode, setMode] = useState("signup");
+    const [role, setRole] = useState("student");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [message, setMessage] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const router = useRouter();
 
     const handleToggle = (_, newMode) => {
         if (newMode) setMode(newMode);
@@ -41,54 +38,36 @@ export default function Home() {
         if (newRole) setRole(newRole);
     };
 
-    const handleLogin = async () => {
-        try {
-            const res = await fetch("http://localhost:5000/api/auth/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email, password }),
-            });
+    const handleSubmit = async () => {
+        const endpoint =
+            mode === "signup" ? "/api/auth/signup" : "/api/auth/login";
 
-            const data = await res.json();
+        const res = await fetch(`http://localhost:5000${endpoint}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password, role }),
+        });
 
-            if (!data.token) {
-                alert("Login failed.");
-                return;
-            }
+        const data = await res.json();
 
-            localStorage.setItem("token", data.token);
-            const payload = JSON.parse(atob(data.token.split(".")[1]));
+        if (res.ok) {
+            const token = data.token;
+            localStorage.setItem("token", token);
+
+            const payload = JSON.parse(atob(token.split(".")[1]));
             const userRole = payload.role;
 
             if (userRole === "student") {
                 router.push("/canvas/student");
             } else if (userRole === "teacher") {
                 router.push("/canvas/teacher");
-            } else {
-                alert("Unknown role.");
             }
-        } catch (err) {
-            console.error("Login error:", err);
-            alert("Something went wrong.");
+        } else {
+            alert(data.message || "Something went wrong!");
         }
     };
-
-    useEffect(() => {
-        fetch("http://localhost:5000/api")
-            .then((res) => {
-                if (!res.ok) throw new Error("Network response was not ok");
-                return res.json();
-            })
-            .then((data) => {
-                console.log("Fetched from backend:", data);
-                setMessage(data.message);
-            })
-            .catch((err) => {
-                console.error("❌ Failed to connect to backend:", err.message);
-            });
-    }, []);
 
     return (
         <Box
@@ -148,31 +127,7 @@ export default function Home() {
                         : "Sign into your account"}
                 </Typography>
 
-                <Box
-                    component="form"
-                    noValidate
-                    autoComplete="off"
-                    sx={{ display: "flex", flexDirection: "column", gap: 2 }}
-                >
-                    {mode === "signup" && (
-                        <Box sx={{ display: "flex", gap: 1 }}>
-                            <TextField
-                                fullWidth
-                                label="First Name"
-                                variant="filled"
-                                InputProps={{ sx: { color: "white" } }}
-                                InputLabelProps={{ sx: { color: "white" } }}
-                            />
-                            <TextField
-                                fullWidth
-                                label="Last Name"
-                                variant="filled"
-                                InputProps={{ sx: { color: "white" } }}
-                                InputLabelProps={{ sx: { color: "white" } }}
-                            />
-                        </Box>
-                    )}
-
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                     <TextField
                         fullWidth
                         label="Email"
@@ -187,14 +142,6 @@ export default function Home() {
                             ),
                             sx: { color: "white" },
                         }}
-                        InputLabelProps={{ sx: { color: "white" } }}
-                    />
-
-                    <TextField
-                        fullWidth
-                        label="Phone Number"
-                        variant="filled"
-                        InputProps={{ sx: { color: "white" } }}
                         InputLabelProps={{ sx: { color: "white" } }}
                     />
 
@@ -233,7 +180,7 @@ export default function Home() {
 
                     <Button
                         variant="contained"
-                        onClick={handleLogin}
+                        onClick={handleSubmit}
                         sx={{
                             mt: 2,
                             py: 1.5,
@@ -276,8 +223,7 @@ export default function Home() {
                         color: "gray",
                     }}
                 >
-                    <p>By creating an account, you agree to our Terms & Service.</p>
-                    {message}
+                    By creating an account, you agree to our Terms & Service.
                 </Typography>
             </Paper>
         </Box>
