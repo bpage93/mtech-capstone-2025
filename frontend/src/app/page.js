@@ -76,12 +76,18 @@ export default function Home() {
     };
 
     useEffect(() => {
-        fetch("http://localhost:5000/api") // Make sure this matches your backend port
-            .then((res) => res.json())
-            .then((data) => setMessage(data.message))
-            .catch((err) =>
-                console.error("Frontend-backend connection error:", err)
-            );
+        fetch("http://localhost:5000/api")
+            .then((res) => {
+                if (!res.ok) throw new Error("Network response was not ok");
+                return res.json();
+            })
+            .then((data) => {
+                console.log("Fetched from backend:", data);
+                setMessage(data.message);
+            })
+            .catch((err) => {
+                console.error("❌ Failed to connect to backend:", err.message);
+            });
     }, []);
 
     return (
@@ -270,7 +276,8 @@ export default function Home() {
                         color: "gray",
                     }}
                 >
-                    By creating an account, you agree to our Terms & Service.
+                    {message}
+                    {/* By creating an account, you agree to our Terms & Service. */}
                 </Typography>
             </Paper>
         </Box>
