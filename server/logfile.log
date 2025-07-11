@@ -1,3 +1,5 @@
 {"level":"http","message":"api endpoint requested"}
 {"level":"http","message":"::1 - - [11/Jul/2025:15:36:06 +0000] \"GET /api HTTP/1.1\" 304 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
 {"level":"http","message":"::1 - - [11/Jul/2025:15:36:06 +0000] \"GET /favicon.ico HTTP/1.1\" 404 150 \"http://localhost:5000/api\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"http","message":"api endpoint requested"}
+{"level":"http","message":"::ffff:127.0.0.1 - - [11/Jul/2025:16:24:35 +0000] \"GET /api HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
