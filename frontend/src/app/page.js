@@ -276,8 +276,8 @@ export default function Home() {
                         color: "gray",
                     }}
                 >
+                    <p>By creating an account, you agree to our Terms & Service.</p>
                     {message}
-                    {/* By creating an account, you agree to our Terms & Service. */}
                 </Typography>
             </Paper>
         </Box>
