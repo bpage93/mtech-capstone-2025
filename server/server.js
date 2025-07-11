@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const cors = require("cors");
 const winston = require("winston");
+require("dotenv").config();
 
 const authRoutes = require("./routes/auth");
 const morgan = require("morgan");

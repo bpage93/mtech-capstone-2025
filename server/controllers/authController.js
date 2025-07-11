@@ -1,24 +1,38 @@
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
-// Demo users (mock database)
+// Dummy users (you should replace this with a real DB)
 const users = [
-    { email: "teacher@example.com", password: "123", role: "teacher" },
-    { email: "student@example.com", password: "123", role: "student" },
+    {
+        id: 1,
+        email: "student@example.com",
+        password: "student123",
+        role: "student",
+    },
+    {
+        id: 2,
+        email: "teacher@example.com",
+        password: "teacher123",
+        role: "teacher",
+    },
 ];
 
-exports.login = (req, res) => {
+const login = async (req, res) => {
     const { email, password } = req.body;
 
-    const user = users.find(
-        (u) => u.email === email && u.password === password
+    const user = users.find((u) => u.email === email);
+    if (!user) return res.status(401).json({ message: "Invalid email" });
+
+    const valid = password === user.password; // use bcrypt.compare in real apps
+    if (!valid) return res.status(401).json({ message: "Invalid password" });
+
+    const token = jwt.sign(
+        { id: user.id, role: user.role },
+        process.env.JWT_SECRET || "defaultSecret",
+        { expiresIn: process.env.JWT_EXPIRES_IN || "1d" }
     );
-    if (!user) {
-        return res.status(401).json({ message: "Invalid credentials" });
-    }
 
-    const token = jwt.sign({ email: user.email, role: user.role }, "secret", {
-        expiresIn: "1h",
-    });
-
-    res.json({ token });
+    res.json({ token, role: user.role });
 };
+
+module.exports = { login };
