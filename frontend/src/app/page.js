@@ -70,64 +70,52 @@ export default function Home() {
     };
 
     return (
-        <Box
-            sx={{
-                minHeight: "100vh",
-                background: "linear-gradient(to right, #1f003b, #000000)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                p: 2,
-            }}
-        >
+        <Box className="min-h-screen  flex items-center justify-center bg-gradient-to-br from-purple-900 via-black to-black p-4">
             <Paper
-                elevation={10}
-                sx={{
-                    width: 500,
-                    p: 4,
-                    borderRadius: 4,
-                    background: "rgba(0, 0, 0, 0.7)",
-                    backdropFilter: "blur(10px)",
-                    color: "white",
-                }}
+                elevation={12}
+                className="w-96 sm:w-[28rem] p-8 rounded-xl bg-black bg-opacity-70 text-white"
+                sx={{ background: "rgba(255, 255, 255, 0.1)" }}
             >
-                <ToggleButtonGroup
-                    value={role}
-                    exclusive
-                    onChange={handleRoleToggle}
-                    fullWidth
-                    sx={{ mb: 2 }}
-                >
-                    <ToggleButton value="teacher" sx={{ color: "white" }}>
-                        Teacher
-                    </ToggleButton>
-                    <ToggleButton value="student" sx={{ color: "white" }}>
-                        Student
-                    </ToggleButton>
-                </ToggleButtonGroup>
+                {/* Role Selector */}
+                <div className="mb-4 flex justify-center">
+                    <ToggleButtonGroup
+                        value={role}
+                        exclusive
+                        onChange={handleRoleToggle}
+                    >
+                        <ToggleButton value="teacher" sx={{ color: "white" }}>
+                            👩‍🏫 Admin
+                        </ToggleButton>
+                        <ToggleButton value="student" sx={{ color: "white" }}>
+                            🎓 Student
+                        </ToggleButton>
+                    </ToggleButtonGroup>
+                </div>
 
-                <ToggleButtonGroup
-                    value={mode}
-                    exclusive
-                    onChange={handleToggle}
-                    fullWidth
-                    sx={{ mb: 2 }}
-                >
-                    <ToggleButton value="signup" sx={{ color: "white" }}>
-                        Sign Up
-                    </ToggleButton>
-                    <ToggleButton value="login" sx={{ color: "white" }}>
-                        Sign In
-                    </ToggleButton>
-                </ToggleButtonGroup>
+                {/* Mode Toggle */}
+                <div className="mb-4 flex justify-center">
+                    <ToggleButtonGroup
+                        value={mode}
+                        exclusive
+                        onChange={handleToggle}
+                    >
+                        <ToggleButton value="signup" sx={{ color: "white" }}>
+                            Sign Up
+                        </ToggleButton>
+                        <ToggleButton value="login" sx={{ color: "white" }}>
+                            Sign In
+                        </ToggleButton>
+                    </ToggleButtonGroup>
+                </div>
 
-                <Typography variant="h6" sx={{ mb: 2 }}>
+                <Typography variant="h5" className="text-center mb-4 text-white">
                     {mode === "signup"
-                        ? "Create an account"
-                        : "Sign into your account"}
+                        ? "🚀 Create an Account"
+                        : "🔐 Sign Into Your Account"}
                 </Typography>
 
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                {/* Input Fields */}
+                <div className="space-y-4">
                     <TextField
                         fullWidth
                         label="Email"
@@ -177,54 +165,33 @@ export default function Home() {
                         }}
                         InputLabelProps={{ sx: { color: "white" } }}
                     />
+                </div>
 
-                    <Button
-                        variant="contained"
-                        onClick={handleSubmit}
-                        sx={{
-                            mt: 2,
-                            py: 1.5,
-                            background:
-                                "linear-gradient(to right, #8e2de2, #4a00e0)",
-                            fontWeight: "bold",
-                        }}
-                    >
-                        {mode === "signup" ? "Create an account" : "Login"}
-                    </Button>
-
-                    <Divider sx={{ my: 2 }}>OR SIGN IN WITH</Divider>
-
-                    <Box sx={{ display: "flex", gap: 2 }}>
-                        <Button
-                            fullWidth
-                            variant="outlined"
-                            startIcon={<Google />}
-                            sx={{ color: "white", borderColor: "white" }}
-                        >
-                            Google
-                        </Button>
-                        <Button
-                            fullWidth
-                            variant="outlined"
-                            startIcon={<Apple />}
-                            sx={{ color: "white", borderColor: "white" }}
-                        >
-                            Apple
-                        </Button>
-                    </Box>
-                </Box>
-
-                <Typography
-                    variant="caption"
-                    sx={{
-                        mt: 2,
-                        display: "block",
-                        textAlign: "center",
-                        color: "gray",
-                    }}
+                {/* Submit Button */}
+                <button
+                    onClick={handleSubmit}
+                    className="btn btn-primary w-full mt-6 font-bold bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 border-none"
                 >
-                    By creating an account, you agree to our Terms & Service.
-                </Typography>
+                    {mode === "signup" ? "Create Account" : "Login"}
+                </button>
+
+                {/* Divider */}
+                <Divider sx={{ my: 3, borderColor: "#666" }}>OR</Divider>
+
+                {/* Social Buttons */}
+                <div className="flex flex-col gap-3">
+                    <button className="btn btn-outline w-full border-white  ">
+                        <Google className="mr-2" /> Google
+                    </button>
+                    <button className="btn btn-outline w-full border-white  ">
+                        <Apple className="mr-2" /> Apple
+                    </button>
+                </div>
+
+                <p className="text-center text-sm text-gray-400 mt-4">
+                    By creating an account, you agree to our{" "}
+                    <span className="underline">Terms & Service</span>.
+                </p>
             </Paper>
         </Box>
     );
