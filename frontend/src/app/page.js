@@ -1,17 +1,8 @@
 "use client";
 
-import {
-    Box,
-    Button,
-    TextField,
-    Typography,
-    ToggleButton,
-    ToggleButtonGroup,
-    InputAdornment,
-    IconButton,
-    Divider,
-    Paper,
-} from "@mui/material";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
 import {
     Email,
     Apple,
@@ -19,8 +10,6 @@ import {
     Visibility,
     VisibilityOff,
 } from "@mui/icons-material";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function Home() {
     const [mode, setMode] = useState("signup");
@@ -33,14 +22,6 @@ export default function Home() {
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
 
-    const handleToggle = (_, newMode) => {
-        if (newMode) setMode(newMode);
-    };
-
-    const handleRoleToggle = (_, newRole) => {
-        if (newRole) setRole(newRole);
-    };
-
     const handleSubmit = async () => {
         const endpoint =
             mode === "signup" ? "/api/auth/signup" : "/api/auth/login";
@@ -52,7 +33,14 @@ export default function Home() {
             },
             body: JSON.stringify(
                 mode === "signup"
-                    ? { email, password, role, firstName, lastName, address }
+                    ? {
+                          email,
+                          password,
+                          role,
+                          firstName,
+                          lastName,
+                          phoneNumber,
+                      }
                     : { email, password, role }
             ),
         });
@@ -75,190 +63,143 @@ export default function Home() {
             alert(data.message || "Something went wrong!");
         }
     };
+    const handleGoogleLogin = () => {
+        window.location.href = "http://localhost:5000/api/auth/google";
+    };
 
     return (
-        <Box className="min-h-screen  flex items-center justify-center bg-gradient-to-br from-purple-900 via-black to-black p-4">
-            <Paper
-                elevation={12}
-                className="w-96 sm:w-[28rem] p-8 rounded-xl bg-white bg-opacity-70 text-white"
-                sx={{ background: "rgba(255, 255, 255, 0.1)" }}
-            >
-                {/* {mode === "signup" &&} */}
-                <div className="mb-4 flex justify-center">
-                    <ToggleButtonGroup
-                        value={role}
-                        exclusive
-                        onChange={handleRoleToggle}
-                    >
-                        <ToggleButton value="teacher" sx={{ color: "white" }}>
-                            👩‍🏫 Admin
-                        </ToggleButton>
-                        <ToggleButton value="student" sx={{ color: "white" }}>
-                            🎓 Student
-                        </ToggleButton>
-                    </ToggleButtonGroup>
-                </div>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-black to-black p-4">
+            <div className="card w-full max-w-md bg-base-200 shadow-xl text-white">
+                <div className="card-body">
+                    <div className="flex justify-center mb-4">
+                        <div className="join">
+                            <button
+                                onClick={() => setRole("teacher")}
+                                className={`btn join-item ${
+                                    role === "teacher"
+                                        ? "btn-primary"
+                                        : "btn-outline"
+                                }`}
+                            >
+                                Admin
+                            </button>
+                            <button
+                                onClick={() => setRole("student")}
+                                className={`btn join-item ${
+                                    role === "student"
+                                        ? "btn-primary"
+                                        : "btn-outline"
+                                }`}
+                            >
+                                Student
+                            </button>
+                        </div>
+                    </div>
 
-                {/* Mode Toggle */}
-                <div className="mb-4 flex justify-center">
-                    <ToggleButtonGroup
-                        value={mode}
-                        exclusive
-                        onChange={handleToggle}
-                    >
-                        <ToggleButton value="signup" sx={{ color: "white" }}>
-                            Sign Up
-                        </ToggleButton>
-                        <ToggleButton value="login" sx={{ color: "white" }}>
-                            Sign In
-                        </ToggleButton>
-                    </ToggleButtonGroup>
-                </div>
+                    <div className="flex justify-center mb-4">
+                        <div className="join">
+                            <button
+                                onClick={() => setMode("signup")}
+                                className={`btn join-item ${
+                                    mode === "signup"
+                                        ? "btn-accent"
+                                        : "btn-outline"
+                                }`}
+                            >
+                                Sign Up
+                            </button>
+                            <button
+                                onClick={() => setMode("login")}
+                                className={`btn join-item ${
+                                    mode === "login"
+                                        ? "btn-accent"
+                                        : "btn-outline"
+                                }`}
+                            >
+                                Sign In
+                            </button>
+                        </div>
+                    </div>
 
-                <Typography
-                    variant="h5"
-                    className="text-center mb-4 text-white"
-                >
-                    {mode === "signup"
-                        ? "🚀 Create an Account"
-                        : "🔐 Sign Into Your Account"}
-                </Typography>
+                    <h2 className="text-center text-xl font-bold mb-4">
+                        {mode === "signup"
+                            ? "🚀 Create an Account"
+                            : "🔐 Sign Into Your Account"}
+                    </h2>
 
-                <div className="space-y-4">
                     {mode === "signup" && (
                         <>
-                            <TextField
-                                fullWidth
-                                label="First Name"
-                                variant="filled"
+                            <input
+                                type="text"
+                                placeholder="First Name"
+                                className="input input-bordered w-full mb-2"
                                 value={firstName}
                                 onChange={(e) => setFirstName(e.target.value)}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <Email sx={{ color: "white" }} />
-                                        </InputAdornment>
-                                    ),
-                                    sx: { color: "white" },
-                                }}
-                                InputLabelProps={{ sx: { color: "white" } }}
                             />
-                            <TextField
-                                fullWidth
-                                label="Last Name"
-                                variant="filled"
+                            <input
+                                type="text"
+                                placeholder="Last Name"
+                                className="input input-bordered w-full mb-2"
                                 value={lastName}
                                 onChange={(e) => setLastName(e.target.value)}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <Email sx={{ color: "white" }} />
-                                        </InputAdornment>
-                                    ),
-                                    sx: { color: "white" },
-                                }}
-                                InputLabelProps={{ sx: { color: "white" } }}
                             />
-                            <TextField
-                                fullWidth
-                                label="Phone"
-                                variant="filled"
+                            <input
+                                type="text"
+                                placeholder="Phone Number"
+                                className="input input-bordered w-full mb-2"
                                 value={phoneNumber}
                                 onChange={(e) => setPhoneNumber(e.target.value)}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <Email sx={{ color: "white" }} />
-                                        </InputAdornment>
-                                    ),
-                                    sx: { color: "white" },
-                                }}
-                                InputLabelProps={{ sx: { color: "white" } }}
                             />
                         </>
                     )}
 
-                    {/* Always shown */}
-                    <TextField
-                        fullWidth
-                        label="Email"
-                        variant="filled"
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        className="input input-bordered w-full mb-2"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <Email sx={{ color: "white" }} />
-                                </InputAdornment>
-                            ),
-                            sx: { color: "white" },
-                        }}
-                        InputLabelProps={{ sx: { color: "white" } }}
                     />
 
-                    <TextField
-                        fullWidth
-                        label="Password"
-                        type={showPassword ? "text" : "password"}
-                        variant="filled"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        onClick={() =>
-                                            setShowPassword(!showPassword)
-                                        }
-                                        edge="end"
-                                    >
-                                        {showPassword ? (
-                                            <VisibilityOff
-                                                sx={{ color: "white" }}
-                                            />
-                                        ) : (
-                                            <Visibility
-                                                sx={{ color: "white" }}
-                                            />
-                                        )}
-                                    </IconButton>
-                                </InputAdornment>
-                            ),
-                            sx: { color: "white" },
-                        }}
-                        InputLabelProps={{ sx: { color: "white" } }}
-                    />
-                </div>
+                    <div className="relative mb-2">
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Password"
+                            className="input input-bordered w-full"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                        <button
+                            type="button"
+                            className="absolute right-2 top-2 btn btn-sm btn-ghost"
+                            onClick={() => setShowPassword(!showPassword)}
+                        >
+                            {showPassword ? "🙈" : "👁️"}
+                        </button>
+                    </div>
 
-                {/* Submit Button */}
-                <button
-                    onClick={handleSubmit}
-                    className="btn btn-primary w-full mt-6 font-bold bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 border-none"
-                >
-                    {mode === "signup" ? "Create Account" : "Login"}
-                </button>
+                    <button
+                        className="btn w-full mt-2 border-white hover:from-purple-900 hover:via-black hover:to-black hover:bg-gradient-to-r"
+                        onClick={handleSubmit}
+                    >
+                        {mode === "signup" ? "Create Account" : "Login"}
+                    </button>
 
-                {/* Divider */}
-                <Divider sx={{ my: 3, borderColor: "#666" }}>OR</Divider>
+                    <div className="divider text-white">OR</div>
 
-                {/* Social Buttons */}
-                <div className="flex flex-col gap-3">
-                    <button className="btn btn-outline w-full border-white  ">
+                    <button
+                        onClick={handleGoogleLogin}
+                        className="btn btn-outline w-full border-white hover:from-purple-900 hover:via-black hover:to-black hover:bg-gradient-to-r"
+                    >
                         <Google className="mr-2" /> Google
                     </button>
-                    <button
-                        className="btn btn-outline w-full border-white bg-white"
-                        sx={{ background: "rgba(255, 255, 255, 0.1)" }}
-                    >
-                        <Apple className="mr-2" /> Apple
-                    </button>
-                </div>
 
-                <p className="text-center text-sm text-gray-400 mt-4">
-                    By creating an account, you agree to our{" "}
-                    <span className="underline">Terms & Service</span>.
-                </p>
-            </Paper>
-        </Box>
+                    <p className="text-center text-sm text-gray-400 mt-4">
+                        By creating an account, you agree to our{" "}
+                        <span className="underline">Terms & Service</span>.
+                    </p>
+                </div>
+            </div>
+        </div>
     );
 }
