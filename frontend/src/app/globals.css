@@ -14,7 +14,7 @@
 }
 
 /* frontend/src/app/globals.css */
-@keyframes bg-pan {
+@keyframes gradient-x {
     0% {
         background-position: 0% 50%;
     }
@@ -24,4 +24,9 @@
     100% {
         background-position: 0% 50%;
     }
+}
+
+.animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient-x 6s ease infinite;
 }

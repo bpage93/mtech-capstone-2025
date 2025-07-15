@@ -68,7 +68,7 @@ export default function Home() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-black to-black p-4">
+        <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-r from-purple-900 via-black to-purple-900 animate-gradient">
             <div className="card w-full max-w-md bg-base-200 shadow-xl text-white">
                 <div className="card-body">
                     <div className="flex justify-center mb-4">
