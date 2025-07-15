@@ -24,6 +24,9 @@ import { useRouter } from "next/navigation";
 
 export default function Home() {
     const [mode, setMode] = useState("signup");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
     const [role, setRole] = useState("student");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -47,7 +50,11 @@ export default function Home() {
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ email, password, role }),
+            body: JSON.stringify(
+                mode === "signup"
+                    ? { email, password, role, firstName, lastName, address }
+                    : { email, password, role }
+            ),
         });
 
         const data = await res.json();
@@ -73,10 +80,10 @@ export default function Home() {
         <Box className="min-h-screen  flex items-center justify-center bg-gradient-to-br from-purple-900 via-black to-black p-4">
             <Paper
                 elevation={12}
-                className="w-96 sm:w-[28rem] p-8 rounded-xl bg-black bg-opacity-70 text-white"
+                className="w-96 sm:w-[28rem] p-8 rounded-xl bg-white bg-opacity-70 text-white"
                 sx={{ background: "rgba(255, 255, 255, 0.1)" }}
             >
-                {/* Role Selector */}
+                {/* {mode === "signup" &&} */}
                 <div className="mb-4 flex justify-center">
                     <ToggleButtonGroup
                         value={role}
@@ -108,14 +115,70 @@ export default function Home() {
                     </ToggleButtonGroup>
                 </div>
 
-                <Typography variant="h5" className="text-center mb-4 text-white">
+                <Typography
+                    variant="h5"
+                    className="text-center mb-4 text-white"
+                >
                     {mode === "signup"
                         ? "🚀 Create an Account"
                         : "🔐 Sign Into Your Account"}
                 </Typography>
 
-                {/* Input Fields */}
                 <div className="space-y-4">
+                    {mode === "signup" && (
+                        <>
+                            <TextField
+                                fullWidth
+                                label="First Name"
+                                variant="filled"
+                                value={firstName}
+                                onChange={(e) => setFirstName(e.target.value)}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <Email sx={{ color: "white" }} />
+                                        </InputAdornment>
+                                    ),
+                                    sx: { color: "white" },
+                                }}
+                                InputLabelProps={{ sx: { color: "white" } }}
+                            />
+                            <TextField
+                                fullWidth
+                                label="Last Name"
+                                variant="filled"
+                                value={lastName}
+                                onChange={(e) => setLastName(e.target.value)}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <Email sx={{ color: "white" }} />
+                                        </InputAdornment>
+                                    ),
+                                    sx: { color: "white" },
+                                }}
+                                InputLabelProps={{ sx: { color: "white" } }}
+                            />
+                            <TextField
+                                fullWidth
+                                label="Phone"
+                                variant="filled"
+                                value={phoneNumber}
+                                onChange={(e) => setPhoneNumber(e.target.value)}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <Email sx={{ color: "white" }} />
+                                        </InputAdornment>
+                                    ),
+                                    sx: { color: "white" },
+                                }}
+                                InputLabelProps={{ sx: { color: "white" } }}
+                            />
+                        </>
+                    )}
+
+                    {/* Always shown */}
                     <TextField
                         fullWidth
                         label="Email"
@@ -183,7 +246,10 @@ export default function Home() {
                     <button className="btn btn-outline w-full border-white  ">
                         <Google className="mr-2" /> Google
                     </button>
-                    <button className="btn btn-outline w-full border-white  ">
+                    <button
+                        className="btn btn-outline w-full border-white bg-white"
+                        sx={{ background: "rgba(255, 255, 255, 0.1)" }}
+                    >
                         <Apple className="mr-2" /> Apple
                     </button>
                 </div>
