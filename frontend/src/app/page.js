@@ -23,7 +23,7 @@ export default function Home() {
 
 	const handleSubmit = async () => {
 		if (mode === "signup" && (!firstName || !lastName || !email || !password)) {
-			let fieldsList = [firstName, lastName, phoneNumber, email, username, street, state, zip, password];
+			const fieldsList = [firstName, lastName, phoneNumber, email, username, street, state, zip, password];
 			for (let field of fieldsList) {
 				if (!field) {
 					document.getElementById("field-warning").classList.remove("hidden");
@@ -32,44 +32,7 @@ export default function Home() {
 			}
 		}
 		const endpoint = mode === "signup" ? "/api/auth/signup" : "/api/auth/login";
-
-		const res = await fetch(`http://localhost:5000${endpoint}`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(
-				mode === "signup"
-					? {
-							email,
-							password,
-							role,
-							firstName,
-							lastName,
-							phoneNumber,
-					  }
-					: { email, password, role }
-			),
-		});
-
-		const data = await res.json();
-
-		if (res.ok) {
-			const token = data.token;
-			localStorage.setItem("token", token);
-
-			const payload = JSON.parse(atob(token.split(".")[1]));
-			const userRole = payload.role;
-
-			if (userRole === "student") {
-				router.push("/canvas/student");
-			} else if (userRole === "admin") {
-				router.push("/canvas/admin");
-			}
-		} else {
-			alert(data.message || "Something went wrong!");
-		}
-	};
+		};
 
 	const handleGoogleLogin = () => {
 		window.location.href = "http://localhost:5000/api/auth/google";
