@@ -75,6 +75,10 @@ export default function Home() {
 		window.location.href = "http://localhost:5000/api/auth/google";
 	};
 
+    const handleLogin = () => {
+        window.location.href = "/api/auth/login";
+    };
+
 	return (
 		<div className="min-h-screen flex items-center justify-center animate-gradient-circular p-4 bg-gradient-to-r from-purple-900 via-black to-purple-900 animate-gradient">
 			<div className="flex flex-col gap-y-3 rounded-xl p-5 w-full max-w-md bg-base-200 shadow-xl text-white">
