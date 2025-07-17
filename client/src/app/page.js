@@ -102,7 +102,7 @@ export default function Home() {
 						<select className="select select-bordered w-full" value={state} onChange={(e) => setState(e.target.value)}>
 							<option value="">Select State</option>
 							{usStates.map((state) => (
-								<option key={state.abbr} value={state.abbr}>
+								<option key={state} value={state}>
 									{state}
 								</option>
 							))}
