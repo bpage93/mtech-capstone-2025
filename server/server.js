@@ -7,9 +7,9 @@ const session = require("express-session");
 const morgan = require("morgan");
 const winston = require("winston");
 const { Strategy: GoogleStrategy } = require("passport-google-oauth20");
-const { query } = require("./database/postgresQuery");
+const usersRouter = require("./routes/users")
 
-const authRoutes = require("./routes/auth");
+const authRouter = require("./routes/auth");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -73,7 +73,7 @@ passport.deserializeUser((obj, done) => {
 });
 
 // Routes
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRouter);
 
 // Health check route
 app.get("/api", (req, res) => {
@@ -95,14 +95,7 @@ app.get(
 	}
 );
 
-app.use("/api/users", async (req, res) => {
-	try {
-		const results = await query('SELECT * FROM "user"');
-		res.status(200).json(results.rows);
-	} catch (error) {
-		res.status(500).json({ error: error.message });
-	}
-});
+app.use("/api/users", usersRouter);
 
 // Start server
 app.listen(PORT, () => {
