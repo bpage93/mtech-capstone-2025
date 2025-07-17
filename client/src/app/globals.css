@@ -1,0 +1,68 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+:root {
+	--background: #ffffff;
+	--foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--background: #0a0a0a;
+		--foreground: #ededed;
+	}
+}
+
+/* frontend/src/app/globals.css */
+@keyframes gradient-circular {
+	0% {
+		background-position: 0% 50%;
+	}
+	25% {
+		background-position: 50% 100%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	75% {
+		background-position: 50% 0%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+.animate-gradient-circular {
+	background-size: 200% 200%;
+	animation: gradient-circular 8s ease infinite;
+}
+
+@keyframes spinbananas {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.banana-spinner {
+    animation: spinbananas 2s linear infinite;
+    font-size: 2.5rem;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 0, 0.7));
+}
+
+@keyframes confettiPop {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-100px) scale(1.5);
+    }
+}
+
+.confetti {
+    animation: confettiPop 1s ease-out forwards;
+}
