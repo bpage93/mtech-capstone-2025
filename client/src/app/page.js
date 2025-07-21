@@ -24,19 +24,24 @@ export default function Home() {
 		document.getElementById("field-warning").classList.add("hidden");
 	}, [mode]);
 
-	async function handleSubmit() {
+	async function handleSubmit(e) {
+		e.preventDefault();
 		if (mode === "signup") {
 			console.log("function called");
 			// validate input
-			const fieldsList = [firstName, lastName, phoneNumber, email, username, street, city, state, zip, password];
-			for (let field of fieldsList) {
-				if (!field) {
+			const fields = { firstName, lastName, phoneNumber, email, username, street, city, state, zip, password };
+			for (let field in fields) {
+				if (fields.hasownProperty(field)) {
+					fields.field = fields[field].trim();
+				}
+				if (!fields.field) {
 					document.getElementById("field-warning").classList.remove("hidden");
+					document.getElementById("field-warning").innerText = "Must fill out all fields";
 					return;
 				}
 			}
 			// add user to database
-			fetch("http://localhost:5000/api/users/create", {
+			await fetch("http://localhost:5000/api/users/create", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -55,6 +60,13 @@ export default function Home() {
 						zip,
 					},
 				}),
+			}).then((res) => {
+				if (res.status === 200) {
+					router.push("/canvas/student");
+				} else if (res.status === 409) {
+					document.getElementById("field-warning").classList.remove("hidden");
+					document.getElementById("field-warning").innerText = "Email is already associated with an existing user";
+				}
 			});
 		}
 		const endpoint = mode === "signup" ? "/api/auth/signup" : "/api/auth/login";
@@ -91,52 +103,57 @@ export default function Home() {
 					</button>
 				</div>
 
-				{mode === "signup" && (
+				<form onSubmit={handleSubmit} className="flex flex-col gap-y-3">
+					{mode === "signup" && (
+						<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+							<input type="text" required placeholder="First Name" className="input input-bordered w-full" maxLength={20} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+							<input type="text" required placeholder="Last Name" className="input input-bordered w-full" maxLength={20} value={lastName} onChange={(e) => setLastName(e.target.value)} />
+							<input type="tel" required placeholder="(123) 456-7890" className="input input-bordered w-full" value={formatPhoneNumber(phoneNumber)} onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))} />
+							<input type="text" required placeholder="Username" className="input input-bordered w-full" maxLength={20} value={username} onChange={(e) => setUsername(e.target.value)} />
+							<input type="text" required placeholder="Street" className="input input-bordered w-full" autoComplete="street-address" value={street} onChange={(e) => setStreet(e.target.value)} />
+							<input type="text" required placeholder="City" className="input input-bordered w-full" value={city} onChange={(e) => setCity(e.target.value)} />
+							<select className="select select-bordered w-full" value={state} onChange={(e) => setState(e.target.value)}>
+								<option value="">Select State</option>
+								{usStates.map((state) => (
+									<option key={state} value={state}>
+										{state}
+									</option>
+								))}
+							</select>
+							<input
+								type="text"
+								required
+								placeholder="Zip Code"
+								className="input input-bordered w-full"
+								value={zip}
+								onChange={(e) => {
+									const value = e.target.value.replace(/\D/g, "");
+									setZip(value.length <= 5 ? value : `${value.slice(0, 5)}-${value.slice(5, 9)}`);
+								}}
+								maxLength={10}
+							/>
+						</div>
+					)}
+
 					<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-						<input type="text" placeholder="First Name" className="input input-bordered w-full" maxLength={20} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-						<input type="text" placeholder="Last Name" className="input input-bordered w-full" maxLength={20} value={lastName} onChange={(e) => setLastName(e.target.value)} />
-						<input type="tel" placeholder="(123) 456-7890" className="input input-bordered w-full" value={formatPhoneNumber(phoneNumber)} onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))} />
-						<input type="text" placeholder="Username" className="input input-bordered w-full" maxLength={20} value={username} onChange={(e) => setUsername(e.target.value)} />
-						<input type="text" placeholder="Street" className="input input-bordered w-full" autoComplete="street-address" value={street} onChange={(e) => setStreet(e.target.value)} />
-						<input type="text" placeholder="City" className="input input-bordered w-full" value={city} onChange={(e) => setCity(e.target.value)} />
-						<select className="select select-bordered w-full" value={state} onChange={(e) => setState(e.target.value)}>
-							<option value="">Select State</option>
-							{usStates.map((state) => (
-								<option key={state} value={state}>
-									{state}
-								</option>
-							))}
-						</select>
-						<input
-							type="text"
-							placeholder="Zip Code"
-							className="input input-bordered w-full"
-							value={zip}
-							onChange={(e) => {
-								const value = e.target.value.replace(/\D/g, "");
-								setZip(value.length <= 5 ? value : `${value.slice(0, 5)}-${value.slice(5, 9)}`);
-							}}
-							maxLength={10}
-						/>
+						<input type="email" required placeholder="Email" className="input input-bordered w-full" maxLength={50} value={email} onChange={(e) => setEmail(e.target.value)} />
+
+						<div className="relative">
+							<input type={showPassword ? "text" : "password"} required maxLength={50} placeholder="Password" className="input input-bordered w-full" value={password} onChange={(e) => setPassword(e.target.value)} />
+							<button type="button" className="absolute right-2 top-2 btn btn-sm btn-ghost" onClick={() => setShowPassword(!showPassword)}>
+								{showPassword ? "🙈" : "👁️"}
+							</button>
+						</div>
 					</div>
-				)}
 
-				<input type="email" placeholder="Email" className="input input-bordered w-full" maxLength={50} value={email} onChange={(e) => setEmail(e.target.value)} />
+					<div id="field-warning" className="text-red-500 text-sm hidden">
+						Must fill out all fields
+					</div>
 
-				<div className="relative">
-					<input type={showPassword ? "text" : "password"} maxLength={50} placeholder="Password" className="input input-bordered w-full" value={password} onChange={(e) => setPassword(e.target.value)} />
-					<button type="button" className="absolute right-2 top-2 btn btn-sm btn-ghost" onClick={() => setShowPassword(!showPassword)}>
-						{showPassword ? "🙈" : "👁️"}
+					<button type="submit" className="btn w-full border-white mt-1 hover:from-purple-900 hover:via-black hover:to-black hover:bg-gradient-to-r">
+						{mode === "signup" ? "Create Account" : "Login"}
 					</button>
-				</div>
-
-				<div id="field-warning" className="text-red-500 text-sm hidden">
-					Must fill out all fields
-				</div>
-
-				<button className="btn w-full border-white hover:from-purple-900 hover:via-black hover:to-black hover:bg-gradient-to-r" onClick={handleSubmit}>
-					{mode === "signup" ? "Create Account" : "Login"}
-				</button>
+				</form>
 
 				<div className="divider">OR</div>
 

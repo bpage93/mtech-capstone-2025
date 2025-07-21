@@ -15,6 +15,7 @@ router.get("/get", async (req, res) => {
 
 router.post("/create", async (req, res) => {
     const user = req.body.user;
+    
     const client = await pool.connect();
 	try {
         await client.query('BEGIN');
@@ -41,7 +42,7 @@ router.post("/create", async (req, res) => {
 					error: "Email is already associated with an existing user",
 				});
 			}
-        } 
+        }
         await client.query('ROLLBACK');
         throw error;
     } finally {
