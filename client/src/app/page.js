@@ -28,7 +28,7 @@ export default function Home() {
 		e.preventDefault();
 		document.getElementById("field-warning").classList.add("hidden");
 		if (mode === "signup") {
-			// validate input
+			// client-side input validation
 			const fields = { firstName, lastName, phoneNumber, email, username, street, city, state, zip, password };
 			for (let field in fields) {
 				if (fields.hasOwnProperty(field)) {
