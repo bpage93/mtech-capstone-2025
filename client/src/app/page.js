@@ -27,18 +27,22 @@ export default function Home() {
 	async function handleSubmit(e) {
 		e.preventDefault();
 		if (mode === "signup") {
-			console.log("function called");
 			// validate input
 			const fields = { firstName, lastName, phoneNumber, email, username, street, city, state, zip, password };
 			for (let field in fields) {
-				if (fields.hasownProperty(field)) {
+				if (fields.hasOwnProperty(field)) {
 					fields.field = fields[field].trim();
 				}
-				if (!fields.field) {
+				if (!fields[field]) {
 					document.getElementById("field-warning").classList.remove("hidden");
 					document.getElementById("field-warning").innerText = "Must fill out all fields";
 					return;
 				}
+			}
+			if (phoneNumber.length != 10) {
+				document.getElementById("field-warning").classList.remove("hidden");
+                document.getElementById("field-warning").innerText = "Phone Number must be 10 digits";
+                return;
 			}
 			// add user to database
 			await fetch("http://localhost:5000/api/users/create", {
@@ -65,7 +69,8 @@ export default function Home() {
 					router.push("/canvas/student");
 				} else if (res.status === 409) {
 					document.getElementById("field-warning").classList.remove("hidden");
-					document.getElementById("field-warning").innerText = "Email is already associated with an existing user";
+                    document.getElementById("field-warning").innerText = "Email is already associated with an existing user";
+                    return;
 				}
 			});
 		}
