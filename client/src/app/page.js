@@ -75,7 +75,17 @@ export default function Home() {
 				}
 			});
         } else if (mode === "login") {
-            
+			const fields = { email, password };
+			for (let field in fields) {
+				if (fields.hasOwnProperty(field)) {
+					fields.field = fields[field].trim();
+				}
+				if (!fields[field]) {
+					document.getElementById("field-warning").classList.remove("hidden");
+					document.getElementById("field-warning").innerText = "Must fill out all fields";
+					return;
+				}
+			}
         }
 	}
 
