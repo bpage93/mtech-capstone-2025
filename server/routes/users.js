@@ -36,6 +36,7 @@ router.post("/create", async (req, res) => {
 
 		res.status(200).json(user);
     } catch (error) {
+        await client.query('ROLLBACK');
         if (error.code === "23505") {
             if (error.constraint === "user_email_key") {
 				return res.status(409).json({
@@ -43,7 +44,6 @@ router.post("/create", async (req, res) => {
 				});
 			}
         }
-        await client.query('ROLLBACK');
         throw error;
     } finally {
         client.release();
