@@ -74,8 +74,9 @@ export default function Home() {
                     return;
 				}
 			});
-		}
-		const endpoint = mode === "signup" ? "/api/auth/signup" : "/api/auth/login";
+        } else if (mode === "login") {
+            
+        }
 	}
 
 	const handleGoogleLogin = () => {
