@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { TitleWrapper, useTitleContext } from "./contexts/TitleContext";
 import { LoadingProvider, useLoading } from "./contexts/LoadingContext";
 import Sidebar from "./components/Sidebar";

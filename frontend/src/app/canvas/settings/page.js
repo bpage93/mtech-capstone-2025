@@ -1,58 +1,60 @@
+// ✅ FILE: app/canvas/settings/page.js
 "use client";
 
-import { useLoading } from "../contexts/LoadingContext";
-import { useTitleContext } from "../contexts/TitleContext";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import SettingsForm from "../components/SettingForm";
 
-export default function Settings() {
-    const { updateTitle } = useTitleContext();
-    const { triggerLoadingAndNavigate } = useLoading();
+export default function SettingsPage() {
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [role, setRole] = useState("student");
+    const [theme, setTheme] = useState("dark");
 
+    // Apply theme to the <html> tag
     useEffect(() => {
-        updateTitle("⚙️ Settings");
-    });
+        if (typeof window !== "undefined") {
+            document.documentElement.setAttribute("data-theme", theme);
+            localStorage.setItem("theme", theme);
+        }
+    }, [theme]);
+
+    // Load saved theme on initial render
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const savedTheme = localStorage.getItem("theme");
+            if (savedTheme) setTheme(savedTheme);
+        }
+    }, []);
+
+    const handleSave = () => {
+        console.log("Settings saved:", {
+            name,
+            email,
+            password,
+            role,
+            theme,
+        });
+        // Later: Send to backend API
+    };
 
     return (
-        <div className="max-w-2xl mx-auto space-y-6">
-            {/* Profile Section */}
-            <div className="card bg-base-200 shadow-md">
-                <div className="card-body">
-                    <h2 className="card-title text-white">👤 Profile</h2>
-                    <form className="form-control gap-4">
-                        <input
-                            type="text"
-                            placeholder="Edit Name"
-                            className="input input-bordered w-full"
-                        />
-                    </form>
-                </div>
-            </div>
-
-            {/* User Section */}
-            <div className="card bg-base-200 shadow-md">
-                <div className="card-body">
-                    <h2 className="card-title text-white">🔐 Account</h2>
-                    <form className="form-control gap-4">
-                        <input
-                            type="email"
-                            placeholder="Edit Email"
-                            className="input input-bordered w-full"
-                        />
-                        <input
-                            type="password"
-                            placeholder="New Password"
-                            className="input input-bordered w-full"
-                        />
-                        <button
-                            onClick={() =>
-                                triggerLoadingAndNavigate("/canvas/settings")
-                            }
-                            className="btn btn-primary w-fit mt-2"
-                        >
-                            Save Changes
-                        </button>
-                    </form>
-                </div>
+        <div className="min-h-screen bg-base-200 flex justify-center items-center p-6">
+            <div className="card bg-base-100 shadow-xl w-full max-w-2xl p-6">
+                <h2 className="text-2xl font-bold mb-4">⚙️ Settings</h2>
+                <SettingsForm
+                    name={name}
+                    setName={setName}
+                    email={email}
+                    setEmail={setEmail}
+                    password={password}
+                    setPassword={setPassword}
+                    role={role}
+                    setRole={setRole}
+                    theme={theme}
+                    setTheme={setTheme}
+                    handleSave={handleSave}
+                />
             </div>
         </div>
     );
