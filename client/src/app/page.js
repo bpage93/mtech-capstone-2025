@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AuthForm from "/components/AuthForm";
+import { Email, Apple, Google, Visibility, VisibilityOff } from "@mui/icons-material";
 
 export default function Home() {
     const [mode, setMode] = useState("signup");
