@@ -49,7 +49,7 @@ router.get("/token", async (req, res) => {
             if (!allowedRoles || !allowedRoles.includes(user.role)) {
 				return res.status(403).json({ error: "Access denied" });
             }
-            return res.status(200).json({ hasAccess: true });
+            return res.status(200).json({ user: {userId: user.id, role: user.role, email: user.email, firstname: user.firstname, lastname: user.lastname, username: user.username, telephone: user.telephone, street: user.street, city: user.city, state: user.state, zip: user.zip }});
 		}
 	} catch (error) {
 		res.status(401).json({ error: "Invalid token" });

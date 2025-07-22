@@ -74,6 +74,7 @@ passport.deserializeUser((obj, done) => {
 
 // Routes
 app.use("/api/auth", authRouter);
+app.use("/api/users", usersRouter);
 
 // Health check route
 app.get("/api", (req, res) => {
@@ -95,7 +96,6 @@ app.get(
 	}
 );
 
-app.use("/api/users", usersRouter);
 
 // Start server
 app.listen(PORT, () => {
