@@ -1,6 +1,9 @@
 const express = require("express");
 const { pool, query } = require("../database/postgresQuery");
 
+const jwt = require("jsonwebtoken");
+const jwtSecret = process.env.JWT_SECRET;
+
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
@@ -74,27 +77,29 @@ router.post("/create", async (req, res) => {
 
 router.post("/login", async (req, res) => {
 	try {
-        const { email, password } = req.body.credentials;
+		const { email, password } = req.body.credentials;
 
-        if (!email || !password) {
-			return res.status(400).json({ error: "Email and password are required" });
-        }
-        
+		if (!email || !password) {
+			return res.status(400).json({ error: "Missing Credentials" });
+		}
+
 		const userSearch = await query(
 			`
             SELECT * FROM "user" WHERE email = $1;
         `,
 			[email]
 		);
-		if (!userResult.rows || userResult.rows.length === 0) {
+
+		if (!userSearch.rows || userSearch.rows.length === 0) {
 			return res.status(401).json({ error: "Invalid Credentials" });
 		} else {
-			const passwordMatch = await bcrypt.compare(password, userSearch.password);
+			const userResult = userSearch.rows[0];
+			const passwordMatch = await bcrypt.compare(password, userResult.password);
 			if (!passwordMatch) {
 				return res.status(401).json({ error: "Invalid Credentials" });
 			} else {
-                // jwt stuff here
-                return res.status(200).json({ message: "Login successful" })
+                const token = jwt.sign({ userId: userResult.id }, jwtSecret, { expiresIn: "1h" });
+				return res.status(200).json({ message: "Login successful", token });
 			}
 		}
 	} catch (error) {

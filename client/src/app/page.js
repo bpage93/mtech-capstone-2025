@@ -42,8 +42,8 @@ export default function Home() {
 			}
 			if (phoneNumber.length != 10) {
 				document.getElementById("field-warning").classList.remove("hidden");
-                document.getElementById("field-warning").innerText = "Phone Number must be 10 digits";
-                return;
+				document.getElementById("field-warning").innerText = "Phone Number must be 10 digits";
+				return;
 			}
 			// add user to database
 			await fetch("http://localhost:5000/api/users/create", {
@@ -70,11 +70,11 @@ export default function Home() {
 					router.push("/canvas/student");
 				} else if (res.status === 409) {
 					document.getElementById("field-warning").classList.remove("hidden");
-                    document.getElementById("field-warning").innerText = "Email is already associated with an existing user";
-                    return;
+					document.getElementById("field-warning").innerText = "Email is already associated with an existing user";
+					return;
 				}
 			});
-        } else if (mode === "login") {
+		} else if (mode === "login") {
 			const fields = { email, password };
 			for (let field in fields) {
 				if (fields.hasOwnProperty(field)) {
@@ -86,7 +86,35 @@ export default function Home() {
 					return;
 				}
 			}
-        }
+			try {
+				const res = await fetch("http://localhost:5000/api/users/login", {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						credentials: {
+							email,
+							password,
+						},
+					}),
+                });
+                
+				if (res.ok) {
+					const data = await res.json();
+					localStorage.setItem("jwtToken", data.token);
+					router.push("/canvas/student");
+				} else if (res.status === 400) {
+					document.getElementById("field-warning").classList.remove("hidden");
+					document.getElementById("field-warning").innerText = "Must fill out all fields";
+				} else if (res.status === 401) {
+					document.getElementById("field-warning").classList.remove("hidden");
+					document.getElementById("field-warning").innerText = "Incorrect email or password";
+				}
+			} catch (error) {
+				console.error("Error:", error);
+			}
+		}
 	}
 
 	const handleGoogleLogin = () => {
