@@ -1,6 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import PageLoader from "../app/canvas/components/PageLoader";
+import PageLoader from "./canvas/components/PageLoader";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
