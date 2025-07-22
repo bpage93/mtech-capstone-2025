@@ -52,7 +52,7 @@ export default function TeacherCanvasPage() {
 	return (
 		<Box className="min-h-screen p-6 bg-gradient-to-br from-gray-900 to-black text-white">
 			<Typography variant="h4" className="mb-6 font-bold">
-				📘 Teacher Course Manager
+				Admin Course Manager
 			</Typography>
 
 			{/* Course Form */}

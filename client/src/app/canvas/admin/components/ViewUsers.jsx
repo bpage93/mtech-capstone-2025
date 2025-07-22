@@ -8,7 +8,7 @@ export default function ViewUsers() {
 	function fetchUsers() {
 		setLoading(true);
 		setError(null);
-		fetch("http://localhost:5000/api/users")
+		fetch("http://localhost:5000/api/users/get")
 			.then((res) => {
 				if (!res.ok) {
 					throw new Error("Network response was not ok");
@@ -46,7 +46,6 @@ export default function ViewUsers() {
 								<th className="py-3 px-4 text-left">Email</th>
 								<th className="py-3 px-4 text-left">Username</th>
 								<th className="py-3 px-4 text-left">Phone Number</th>
-								<th className="py-3 px-4 text-left">Address</th>
 								<th className="py-3 px-4 text-left">Password</th>
 							</tr>
 						</thead>
@@ -60,7 +59,6 @@ export default function ViewUsers() {
 									<td className="py-3 px-4">{user.email || "N/A"}</td>
 									<td className="py-3 px-4">{user.username || "N/A"}</td>
 									<td className="py-3 px-4">{user.telephone || "N/A"}</td>
-									<td className="py-3 px-4">{user.address.replace(/\\|"|\(|\)/g, "").replace(/,/g, ", ") || "N/A"}</td>
 									<td className="py-3 px-4">{user.password || "N/A"}</td>
 								</tr>
 							))}
