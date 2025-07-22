@@ -1,30 +1,30 @@
+// ✅ FILE: app/page.js
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-// import { query } from "@/../../server/database/postgresQuery";
-import { Email, Apple, Google, Visibility, VisibilityOff } from "@mui/icons-material";
+import AuthForm from "/components/AuthForm";
 
 export default function Home() {
-	const [mode, setMode] = useState("signup");
-	const [firstName, setFirstName] = useState("");
-	const [lastName, setLastName] = useState("");
-	const [phoneNumber, setPhoneNumber] = useState("");
-	const [email, setEmail] = useState("");
-	const [username, setUsername] = useState("");
-	const [street, setStreet] = useState("");
-	const [city, setCity] = useState("");
-	const [state, setState] = useState("");
-	const [zip, setZip] = useState("");
-	const [password, setPassword] = useState("");
-	const [showPassword, setShowPassword] = useState(false);
-	const router = useRouter();
+    const [mode, setMode] = useState("signup");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
+    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
+    const [street, setStreet] = useState("");
+    const [city, setCity] = useState("");
+    const [state, setState] = useState("");
+    const [zip, setZip] = useState();
+    const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const router = useRouter();
 
-	useEffect(() => {
+    useEffect(() => {
 		document.getElementById("field-warning").classList.add("hidden");
 	}, [mode]);
 
-	async function handleSubmit(e) {
+   async function handleSubmit(e) {
 		e.preventDefault();
 		document.getElementById("field-warning").classList.add("hidden");
 		if (mode === "signup") {
@@ -117,15 +117,11 @@ export default function Home() {
 		}
 	}
 
-	const handleGoogleLogin = () => {
-		window.location.href = "http://localhost:5000/api/auth/google";
-	};
+    const handleGoogleLogin = () => {
+        window.location.href = "http://localhost:5000/api/auth/google";
+    };
 
-	const handleLogin = () => {
-		window.location.href = "/api/auth/login";
-	};
-
-	const usStates = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"];
+    const usStates = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"];
 
 	function formatPhoneNumber(value) {
 		const numbers = value.replace(/\D/g, "");
@@ -134,7 +130,7 @@ export default function Home() {
 		return `(${numbers.slice(0, 3)}) ${numbers.slice(3, 6)}-${numbers.slice(6, 10)}`;
 	}
 
-	return (
+    return (
 		<div className="min-h-screen flex items-center justify-center animate-gradient-circular p-4 bg-gradient-to-r from-purple-900 via-black to-purple-900 animate-gradient">
 			<div className="flex flex-col gap-y-3 rounded-xl p-5 w-full max-w-md bg-base-200 shadow-xl text-white">
 				<h2 className="text-center text-2xl my-2 font-bold">{mode === "signup" ? "Create an Account" : "Sign Into Your Account"}</h2>
@@ -213,3 +209,5 @@ export default function Home() {
 		</div>
 	);
 }
+
+
