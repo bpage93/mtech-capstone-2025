@@ -8,7 +8,7 @@ export default function Sidebar() {
         <div className="w-64 bg-base-200 rounded-box shadow p-4 flex flex-col gap-2">
             <button
                 className="btn btn-outline w-full justify-start text-white"
-                onClick={() => triggerLoadingAndNavigate("/canvas/dashboard")}
+                onClick={() => triggerLoadingAndNavigate("/canvas/student")}
             >
                 🏠 Dashboard
             </button>
