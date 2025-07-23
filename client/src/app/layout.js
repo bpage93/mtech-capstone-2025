@@ -2,6 +2,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import PageLoader from "./canvas/components/PageLoader";
 import { AuthProvider } from "@/contexts/AuthContext";
+import Loading from "./loading";
+import { Suspense } from "react";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -23,8 +25,10 @@ export default function RootLayout({ children }) {
 		<html lang="en">
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<AuthProvider>
-					<PageLoader />
-					{children}
+                    {/* <PageLoader>{children}</PageLoader> */}
+                    <Suspense fallback={<Loading />}>
+                        {children}
+                    </Suspense>
 				</AuthProvider>
 			</body>
 		</html>

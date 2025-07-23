@@ -1,30 +1,41 @@
 "use client";
+import { useState, useEffect } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-
-export default function PageLoader() {
-    const router = useRouter();
-    const [loading, setLoading] = useState(false);
+export default function PageLoader({ children }) {
+	const [loading, setLoading] = useState(true);
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
 
     useEffect(() => {
-        const handleStart = () => setLoading(true);
-        const handleComplete = () => setLoading(false);
+        const minLoad = setTimeout(() => {
+            setLoading(false);
+        }, 500)
+        return () => clearTimeout(minLoad);
+	}, [pathname, searchParams]);
 
-        router.events?.on("routeChangeStart", handleStart);
-        router.events?.on("routeChangeComplete", handleComplete);
-        router.events?.on("routeChangeError", handleComplete);
+	return loading ? (
+		<div className="w-full min-h-dvh flex p-4 text-white bg-gradient-to-r from-[#450082] to-[#12001e] animate-circular-gradient gap-4 relative">
+			<div className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-gradient-to-r from-[#450082] to-[#12001e] text-white rounded-box transition-opacity duration-1000 ease-in overflow-hidden">
+				{/* Confetti Dots */}
+				<div className="absolute w-full h-full flex items-center justify-center gap-2 z-0">
+					{Array.from({ length: 8 }).map((_, i) => (
+						<div
+							key={i}
+							// className="w-4 h-4 rounded-full bg-pink-400 animate-bounce"
+							style={{ animationDelay: `${i * 0.2}s` }}
+						></div>
+					))}
+				</div>
 
-        return () => {
-            router.events?.off("routeChangeStart", handleStart);
-            router.events?.off("routeChangeComplete", handleComplete);
-            router.events?.off("routeChangeError", handleComplete);
-        };
-    }, [router]);
+				{/* 🍌 Spinning Banana */}
+				<div className="z-10 text-4xl banana-spinner">🍌</div>
 
-    return loading ? (
-        <div className="fixed top-0 left-0 right-0 bottom-0 bg-white bg-opacity-80 z-50 flex items-center justify-center">
-            <span className="loading loading-spinner loading-lg text-primary"></span>
-        </div>
-    ) : null;
+				{/* 🙈 Message */}
+				<p className="z-10 text-4xl font-bold animate-bounce tracking-wide drop-shadow mb-2">Hang tight! The app is monkeying around! 🙈</p>
+			</div>
+		</div>
+	) : (
+		children
+	);
 }

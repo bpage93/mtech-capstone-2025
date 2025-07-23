@@ -1,38 +1,37 @@
 "use client";
-import { useLoading } from "../contexts/LoadingContext";
+import { useRouter } from "next/navigation";
 
-export default function Sidebar() {
-    const { triggerLoadingAndNavigate } = useLoading();
-
+export default function Sidebar () {
+    const router = useRouter();
     return (
         <div className="w-64 bg-base-200 rounded-box shadow p-4 flex flex-col gap-2">
             <button
                 className="btn btn-outline w-full justify-start text-white"
-                onClick={() => triggerLoadingAndNavigate("/canvas/student")}
+                onClick={() => router.push("/canvas/student")}
             >
                 🏠 Dashboard
             </button>
             <button
                 className="btn btn-outline w-full justify-start text-white"
-                onClick={() => triggerLoadingAndNavigate("/canvas/courses")}
+                onClick={() => router.push("/canvas/courses")}
             >
                 📚 Courses
             </button>
             <button
                 className="btn btn-outline w-full justify-start text-white"
-                onClick={() => triggerLoadingAndNavigate("/canvas/assignments")}
+                onClick={() => router.push("/canvas/assignments")}
             >
                 📝 Assignments
             </button>
             <button
                 className="btn btn-outline w-full justify-start text-white"
-                onClick={() => triggerLoadingAndNavigate("/canvas/messages")}
+                onClick={() => router.push("/canvas/messages")}
             >
                 📨 Messages
             </button>
             <button
                 className="btn btn-outline w-full justify-start text-white"
-                onClick={() => triggerLoadingAndNavigate("/canvas/settings")}
+                onClick={() => router.push("/canvas/settings")}
             >
                 ⚙️ Settings
             </button>
