@@ -3,14 +3,15 @@
 import { TitleWrapper, useTitleContext } from "./contexts/TitleContext";
 import Sidebar from "./components/Sidebar";
 import RouteGuard from "../components/RouteGuard";
-import Loading from "./loading";
-import { Suspense } from "react";
+import PageLoader from "@/app/components/PageLoader";
 
 export default function Layout({ children }) {
 	return (
 		<RouteGuard>
 			<TitleWrapper>
-				<MainLayout>{children}</MainLayout>
+				<MainLayout>
+					<PageLoader>{children}</PageLoader>
+				</MainLayout>
 			</TitleWrapper>
 		</RouteGuard>
 	);
@@ -29,9 +30,7 @@ function MainLayout({ children }) {
 				<div className="card bg-base-300 p-4 rounded-box shadow-md">
 					<TitleDisplay title={title} />
 				</div>
-				<div className="card bg-base-100 p-6 rounded-box shadow grow overflow-y-auto overflow-x-auto">
-					<Suspense fallback={<Loading />}>{children}</Suspense>
-				</div>
+				<div className="card bg-base-100 p-6 rounded-box shadow grow overflow-y-auto overflow-x-auto">{children}</div>
 			</div>
 		</div>
 	);

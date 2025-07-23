@@ -2,6 +2,7 @@
 import { useTitleContext } from "@/app/canvas/contexts/TitleContext";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation"; // Next.js navigation hook
+import PageLoader from "@/app/components/PageLoader";
 
 export default function CoursePage() {
 	const { title, updateTitle } = useTitleContext();
@@ -14,9 +15,11 @@ export default function CoursePage() {
 	}, [pathname, updateTitle]);
 
 	return (
-		<div>
-			<h1>Course Page</h1>
-			<p>title: {title}</p>
-		</div>
+		<PageLoader>
+			<div>
+				<h1>Course Page</h1>
+				<p>title: {title}</p>
+			</div>
+		</PageLoader>
 	);
 }

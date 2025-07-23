@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import { Box, Card, CardContent, Typography, Paper } from "@mui/material";
 import { useTitleContext } from "../contexts/TitleContext";
+import PageLoader from "@/app/components/PageLoader";
 
 export default function StudentCanvasPage() {
     const [courses, setCourses] = useState([]);
@@ -21,46 +22,34 @@ export default function StudentCanvasPage() {
     }, [updateTitle]);
 
     return (
-        <Box className="min-h-screen p-6 bg-gradient-to-br from-slate-900 to-black text-white">
-            <Typography variant="h4" className="mb-6 font-bold">
-                🎓 Available Courses
-            </Typography>
+		<PageLoader>
+			<Box className="min-h-screen p-6 bg-gradient-to-br from-slate-900 to-black text-white">
+				<Typography variant="h4" className="mb-6 font-bold">
+					🎓 Available Courses
+				</Typography>
 
-            {courses.length === 0 ? (
-                <Paper className="p-6 text-center text-gray-300 bg-white/10">
-                    No courses available yet. Please check back later!
-                </Paper>
-            ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {courses.map((course) => (
-                        <Card
-                            key={course.id}
-                            className="bg-white/10 text-white shadow-md hover:scale-[1.01] transition-transform"
-                        >
-                            <CardContent>
-                                <Typography
-                                    variant="h6"
-                                    className="font-semibold"
-                                >
-                                    {course.title}
-                                </Typography>
-                                <Typography
-                                    variant="body2"
-                                    className="text-gray-300 mt-2"
-                                >
-                                    {course.description}
-                                </Typography>
-                                <Typography
-                                    variant="body2"
-                                    className="text-gray-400 mt-2"
-                                >
-                                    Credit Hours: {course.creditHours}
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            )}
-        </Box>
-    );
+				{courses.length === 0 ? (
+					<Paper className="p-6 text-center text-gray-300 bg-white/10">No courses available yet. Please check back later!</Paper>
+				) : (
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+						{courses.map((course) => (
+							<Card key={course.id} className="bg-white/10 text-white shadow-md hover:scale-[1.01] transition-transform">
+								<CardContent>
+									<Typography variant="h6" className="font-semibold">
+										{course.title}
+									</Typography>
+									<Typography variant="body2" className="text-gray-300 mt-2">
+										{course.description}
+									</Typography>
+									<Typography variant="body2" className="text-gray-400 mt-2">
+										Credit Hours: {course.creditHours}
+									</Typography>
+								</CardContent>
+							</Card>
+						))}
+					</div>
+				)}
+			</Box>
+		</PageLoader>
+	);
 }

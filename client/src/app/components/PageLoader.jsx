@@ -10,12 +10,12 @@ export default function PageLoader({ children }) {
     useEffect(() => {
         const minLoad = setTimeout(() => {
             setLoading(false);
-        }, 500)
+        }, 200)
         return () => clearTimeout(minLoad);
 	}, [pathname, searchParams]);
 
 	return loading ? (
-		<div className="w-full min-h-dvh flex p-4 text-white bg-gradient-to-r from-[#450082] to-[#12001e] animate-circular-gradient gap-4 relative">
+		<div className="w-full min-h-dvh flex p-4 text-white bg-gradient-to-r from-[#450082] to-[#12001e] animate-circular-gradient gap-4 fixed top-0 left-0">
 			<div className="absolute inset-0 z-50 flex flex-col items-center justify-center gap-4 bg-gradient-to-r from-[#450082] to-[#12001e] text-white rounded-box transition-opacity duration-1000 ease-in overflow-hidden">
 				{/* Confetti Dots */}
 				<div className="absolute w-full h-full flex items-center justify-center gap-2 z-0">
