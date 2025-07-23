@@ -10,7 +10,9 @@ export default function Layout({ children }) {
 	return (
 		<RouteGuard>
 			<TitleWrapper>
-				<MainLayout>{children}</MainLayout>
+				<MainLayout>
+					<Suspense fallback={<Loading />}>{children}</Suspense>
+				</MainLayout>
 			</TitleWrapper>
 		</RouteGuard>
 	);
@@ -29,9 +31,7 @@ function MainLayout({ children }) {
 				<div className="card bg-base-300 p-4 rounded-box shadow-md">
 					<TitleDisplay title={title} />
 				</div>
-				<div className="card bg-base-100 p-6 rounded-box shadow grow overflow-y-auto overflow-x-auto">
-					<Suspense fallback={<Loading />}>{children}</Suspense>
-				</div>
+				<div className="card bg-base-100 p-6 rounded-box shadow grow overflow-y-auto overflow-x-auto">{children}</div>
 			</div>
 		</div>
 	);
