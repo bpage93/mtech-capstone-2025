@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 
-export default function RouteGuard({ children }) {
+export default function RouteGuard ({ children }) {
 	const router = useRouter();
 	const { user, validateAccess } = useAuth();
 
@@ -14,7 +14,7 @@ export default function RouteGuard({ children }) {
 
 			if (!hasAccess) {
 				router.push("/");
-			}
+            }
         }
 
         checkAccess();
