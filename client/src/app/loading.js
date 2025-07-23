@@ -1,5 +1,3 @@
-"use client";
-
 export default function Loading() {
     return (
         <div className="w-full min-h-dvh flex p-4 text-white bg-gradient-to-r from-[#450082] to-[#12001e] animate-circular-gradient gap-4 relative">
