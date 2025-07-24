@@ -1,6 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider } from "@/app/contexts/AuthContext";
 import Loading from "./loading";
 import { Suspense } from "react";
 
@@ -24,9 +24,7 @@ export default function RootLayout({ children }) {
 		<html lang="en">
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<AuthProvider>
-                    <Suspense fallback={<Loading />}>
-                        {children}
-                    </Suspense>
+					<Suspense fallback={<Loading />}>{children}</Suspense>
 				</AuthProvider>
 			</body>
 		</html>

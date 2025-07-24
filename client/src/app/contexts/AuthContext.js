@@ -7,7 +7,6 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
 
     async function validateAccess(route) {
-        console.log("validateAccess triggered");
         const token = localStorage.getItem("jwtToken");
         if (!token) {
             return false;
@@ -22,7 +21,7 @@ export function AuthProvider({ children }) {
                 const data = await res.json();
                 setUser(data.user);
                 console.log("User data:", data.user);
-                return true;
+                return data.user;
             }
             return false;
         } catch (error) {

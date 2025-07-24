@@ -93,13 +93,13 @@ router.post("/login", async (req, res) => {
 		if (!userSearch.rows || userSearch.rows.length === 0) {
 			return res.status(401).json({ error: "Invalid Credentials" });
 		} else {
-			const userResult = userSearch.rows[0];
-			const passwordMatch = await bcrypt.compare(password, userResult.password);
+			const user = userSearch.rows[0];
+			const passwordMatch = await bcrypt.compare(password, user.password);
 			if (!passwordMatch) {
 				return res.status(401).json({ error: "Invalid Credentials" });
 			} else {
-                const token = jwt.sign({ userId: userResult.id }, jwtSecret, { expiresIn: "1h" });
-				return res.status(200).json({ message: "Login successful", token });
+                const token = jwt.sign({ userId: user.id }, jwtSecret, { expiresIn: "1h" });
+				return res.status(200).json({ message: "Login successful", token, role: user.role });
 			}
 		}
 	} catch (error) {

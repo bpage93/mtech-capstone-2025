@@ -1,13 +1,16 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/contexts/AuthContext";
 
 export default function Sidebar () {
     const router = useRouter();
+    const { user } = useAuth();
+
     return (
         <div className="w-64 bg-base-200 rounded-box shadow p-4 flex flex-col gap-2">
             <button
                 className="btn btn-outline w-full justify-start text-white"
-                onClick={() => router.push("/canvas/student")}
+                onClick={() => router.push(`/canvas/${user.role}`)}
             >
                 🏠 Dashboard
             </button>
