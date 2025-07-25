@@ -35,10 +35,6 @@ export default function Home() {
 			}
 		})();
     }, []);
-    
-    useEffect(() => {
-        console.log(isSubmitting);
-    }, [isSubmitting]);
 
 	useEffect(() => {
 		document.getElementById("field-warning").classList.add("hidden");
@@ -206,7 +202,7 @@ export default function Home() {
 						</div>
 					)}
 
-					<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+					<div className={`grid grid-cols-1 ${mode === "signup" && "sm:grid-cols-2"} gap-3`}>
 						<input type="email" required placeholder="Email" className="input w-full" maxLength={50} value={email} onChange={(e) => setEmail(e.target.value)} />
 						<div className="relative flex items-center w-full">
 							<input type={showPassword ? "text" : "password"} required maxLength={50} placeholder="Password" className="inpu w-full pr-10" value={password} onChange={(e) => setPassword(e.target.value)} />
