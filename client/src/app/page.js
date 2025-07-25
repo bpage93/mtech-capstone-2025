@@ -20,6 +20,7 @@ export default function Home() {
 	const [zip, setZip] = useState();
 	const [password, setPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	const router = useRouter();
 
@@ -33,7 +34,11 @@ export default function Home() {
 				router.push(`/canvas/${returnedUserData.role}`);
 			}
 		})();
-	}, []);
+    }, []);
+    
+    useEffect(() => {
+        console.log(isSubmitting);
+    }, [isSubmitting]);
 
 	useEffect(() => {
 		document.getElementById("field-warning").classList.add("hidden");
@@ -41,6 +46,7 @@ export default function Home() {
 
 	async function handleSubmit(e) {
 		e.preventDefault();
+        setIsSubmitting(true);
 		document.getElementById("field-warning").classList.add("hidden");
 		if (mode === "signup") {
 			// client-side input validation
@@ -52,12 +58,14 @@ export default function Home() {
 				if (!fields[field]) {
 					document.getElementById("field-warning").classList.remove("hidden");
 					document.getElementById("field-warning").innerText = "Must fill out all fields";
+					setIsSubmitting(false);
 					return;
 				}
 			}
 			if (phoneNumber.length != 10) {
 				document.getElementById("field-warning").classList.remove("hidden");
 				document.getElementById("field-warning").innerText = "Phone Number must be 10 digits";
+				setIsSubmitting(false);
 				return;
 			}
 			// add user to database
@@ -86,6 +94,7 @@ export default function Home() {
 				} else if (res.status === 409) {
 					document.getElementById("field-warning").classList.remove("hidden");
 					document.getElementById("field-warning").innerText = "Email is already associated with an existing user";
+					setIsSubmitting(false);
 					return;
 				}
 			});
@@ -98,6 +107,7 @@ export default function Home() {
 				if (!fields[field]) {
 					document.getElementById("field-warning").classList.remove("hidden");
 					document.getElementById("field-warning").innerText = "Must fill out all fields";
+					setIsSubmitting(false);
 					return;
 				}
 			}
@@ -122,12 +132,17 @@ export default function Home() {
 				} else if (res.status === 400) {
 					document.getElementById("field-warning").classList.remove("hidden");
 					document.getElementById("field-warning").innerText = "Must fill out all fields";
+					setIsSubmitting(false);
+					return;
 				} else if (res.status === 401) {
 					document.getElementById("field-warning").classList.remove("hidden");
 					document.getElementById("field-warning").innerText = "Incorrect email or password";
+					setIsSubmitting(false);
+					return;
 				}
 			} catch (error) {
 				console.error("Error:", error);
+				setIsSubmitting(false);
 			}
 		}
 	}
@@ -205,7 +220,7 @@ export default function Home() {
 						Must fill out all fields
 					</div>
 
-					<button type="submit" className="btn w-full border-white mt-1 hover:from-purple-900 hover:via-black hover:to-black hover:bg-gradient-to-r">
+					<button disabled={isSubmitting} type="submit" className="btn w-full border-white mt-1 hover:from-purple-900 hover:via-black hover:to-black hover:bg-gradient-to-r">
 						{mode === "signup" ? "Create Account" : "Login"}
 					</button>
 				</form>
