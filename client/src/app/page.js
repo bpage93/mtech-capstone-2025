@@ -152,7 +152,7 @@ export default function Home() {
 	return (
 		<div className="min-h-screen flex items-center justify-center animate-gradient-circular p-4 bg-gradient-to-r from-purple-900 via-black to-purple-900 animate-gradient">
 			<div className="flex flex-col gap-y-3 rounded-xl p-5 w-full max-w-md bg-base-200 shadow-xl text-white">
-				<h2 className="text-center text-2xl my-2 font-bold">{mode === "signup" ? "Create an Account" : "Sign Into Your Account"}</h2>
+				<h2 className="text-center text-2xl my-2 font-bold">{mode === "signup" ? "Create an Account" : "Log Into Your Account"}</h2>
 
 				<div className="flex justify-center mb-1 join">
 					<button onClick={() => setMode("signup")} className={`btn join-item ${mode === "signup" ? "btn-accent" : "btn-outline"}`}>
