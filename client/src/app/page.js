@@ -1,10 +1,7 @@
-// ✅ FILE: app/page.js
 "use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import AuthForm from "/components/AuthForm";
-import { Email, Apple, Google, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAuth } from "@/app/contexts/AuthContext";
 
 export default function Home() {
@@ -34,7 +31,7 @@ export default function Home() {
 				router.push(`/canvas/${returnedUserData.role}`);
 			}
 		})();
-    }, []);
+	}, []);
 
 	useEffect(() => {
 		document.getElementById("field-warning").classList.add("hidden");
@@ -42,7 +39,7 @@ export default function Home() {
 
 	async function handleSubmit(e) {
 		e.preventDefault();
-        setIsSubmitting(true);
+		setIsSubmitting(true);
 		document.getElementById("field-warning").classList.add("hidden");
 		if (mode === "signup") {
 			// client-side input validation
@@ -143,10 +140,6 @@ export default function Home() {
 		}
 	}
 
-	const handleGoogleLogin = () => {
-		window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google`;
-	};
-
 	const usStates = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"];
 
 	function formatPhoneNumber(value) {
@@ -216,20 +209,10 @@ export default function Home() {
 						Must fill out all fields
 					</div>
 
-					<button disabled={isSubmitting} type="submit" className="btn w-full border-white mt-1 hover:from-purple-900 hover:via-black hover:to-black hover:bg-gradient-to-r">
+					<button disabled={isSubmitting} type="submit" className="btn w-full border-white my-2 hover:from-purple-900 hover:via-black hover:to-black hover:bg-gradient-to-r">
 						{mode === "signup" ? "Create Account" : "Login"}
 					</button>
 				</form>
-
-				<div className="divider">OR</div>
-
-				<button onClick={handleGoogleLogin} className="btn btn-outline w-full border-white hover:from-purple-900 hover:via-black hover:to-black hover:bg-gradient-to-r">
-					<Google className="mr-2" /> Google
-				</button>
-
-				<p className="text-center text-sm text-gray-400 mt-4">
-					By creating an account, you agree to our <span className="underline">Terms & Service</span>.
-				</p>
 			</div>
 		</div>
 	);

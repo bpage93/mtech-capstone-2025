@@ -1,7 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const { query } = require("../database/postgresQuery");
-const passport = require("passport");
 const router = express.Router();
 
 const USER_PERMISSIONS = {
@@ -13,20 +12,6 @@ const USER_PERMISSIONS = {
 	"/canvas/courses": ["student", "admin"],
 	"/": ["student", "admin"],
 };
-
-// Start Google Auth
-router.get(
-	"/google",
-	passport.authenticate("google", {
-		scope: ["profile", "email"],
-	})
-);
-
-// Callback route
-router.get("/google/callback", passport.authenticate("google", { failureRedirect: "/" }), (req, res) => {
-	// Successful auth, redirect to frontend dashboard
-	res.redirect(`${process.env.FRONTEND_URL}/canvas/student`); // or admin, depending on user
-});
 
 router.get("/token", async (req, res) => {
 	const token = req.headers.authorization?.split(" ")[1];
