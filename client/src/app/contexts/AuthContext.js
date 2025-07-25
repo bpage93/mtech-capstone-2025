@@ -12,11 +12,11 @@ export function AuthProvider({ children }) {
             return false;
         }
         try {
-            const res = await fetch(`http://localhost:5000/api/auth/token?route=${route}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            });
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/token?route=${route}`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
             if (res.ok) {
                 const data = await res.json();
                 setUser(data.user);

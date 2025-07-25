@@ -61,7 +61,7 @@ export default function Home() {
 				return;
 			}
 			// add user to database
-			await fetch("http://localhost:5000/api/users/create", {
+			await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/create`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -102,7 +102,7 @@ export default function Home() {
 				}
 			}
 			try {
-				const res = await fetch("http://localhost:5000/api/users/login", {
+				const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/login`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
@@ -133,7 +133,7 @@ export default function Home() {
 	}
 
 	const handleGoogleLogin = () => {
-		window.location.href = "http://localhost:5000/api/auth/google";
+		window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google`;
 	};
 
 	const usStates = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"];

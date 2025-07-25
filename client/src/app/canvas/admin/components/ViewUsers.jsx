@@ -8,7 +8,7 @@ export default function ViewUsers() {
 	function fetchUsers() {
 		setLoading(true);
 		setError(null);
-		fetch("http://localhost:5000/api/users/get")
+		fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/get`)
 			.then((res) => {
 				if (!res.ok) {
 					throw new Error("Network response was not ok");
