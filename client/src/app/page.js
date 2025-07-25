@@ -20,7 +20,7 @@ export default function Home() {
 	const [zip, setZip] = useState();
 	const [password, setPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
-    
+
 	const router = useRouter();
 
 	const { user, validateAccess } = useAuth();
@@ -28,10 +28,10 @@ export default function Home() {
 	useEffect(() => {
 		(async () => {
 			const currentRoute = window.location.pathname;
-            const returnedUserData = await validateAccess(currentRoute);
-            if (returnedUserData && returnedUserData != undefined) {
-                router.push(`/canvas/${returnedUserData.role}`);
-            }
+			const returnedUserData = await validateAccess(currentRoute);
+			if (returnedUserData && returnedUserData != undefined) {
+				router.push(`/canvas/${returnedUserData.role}`);
+			}
 		})();
 	}, []);
 
@@ -162,12 +162,12 @@ export default function Home() {
 				<form onSubmit={handleSubmit} className="flex flex-col gap-y-3">
 					{mode === "signup" && (
 						<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-							<input type="text" required placeholder="First Name" className="input input-bordered w-full" maxLength={20} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-							<input type="text" required placeholder="Last Name" className="input input-bordered w-full" maxLength={20} value={lastName} onChange={(e) => setLastName(e.target.value)} />
-							<input type="tel" required placeholder="(123) 456-7890" className="input input-bordered w-full" value={formatPhoneNumber(phoneNumber)} onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))} />
-							<input type="text" required placeholder="Username" className="input input-bordered w-full" maxLength={20} value={username} onChange={(e) => setUsername(e.target.value)} />
-							<input type="text" required placeholder="Street" className="input input-bordered w-full" autoComplete="street-address" value={street} onChange={(e) => setStreet(e.target.value)} />
-							<input type="text" required placeholder="City" className="input input-bordered w-full" value={city} onChange={(e) => setCity(e.target.value)} />
+							<input type="text" required placeholder="First Name" className="input w-full" maxLength={20} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+							<input type="text" required placeholder="Last Name" className="input w-full" maxLength={20} value={lastName} onChange={(e) => setLastName(e.target.value)} />
+							<input type="tel" required placeholder="(123) 456-7890" className="input w-full" value={formatPhoneNumber(phoneNumber)} onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 10))} />
+							<input type="text" required placeholder="Username" className="input w-full" maxLength={20} value={username} onChange={(e) => setUsername(e.target.value)} />
+							<input type="text" required placeholder="Street" className="input w-full" autoComplete="street-address" value={street} onChange={(e) => setStreet(e.target.value)} />
+							<input type="text" required placeholder="City" className="input w-full" value={city} onChange={(e) => setCity(e.target.value)} />
 							<select className="select select-bordered w-full" value={state} onChange={(e) => setState(e.target.value)}>
 								<option value="">Select State</option>
 								{usStates.map((state) => (
@@ -180,7 +180,7 @@ export default function Home() {
 								type="text"
 								required
 								placeholder="Zip Code"
-								className="input input-bordered w-full"
+								className="input w-full"
 								value={zip}
 								onChange={(e) => {
 									const value = e.target.value.replace(/\D/g, "");
@@ -192,12 +192,11 @@ export default function Home() {
 					)}
 
 					<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-						<input type="email" required placeholder="Email" className="input input-bordered w-full" maxLength={50} value={email} onChange={(e) => setEmail(e.target.value)} />
-
-						<div className="relative">
-							<input type={showPassword ? "text" : "password"} required maxLength={50} placeholder="Password" className="input input-bordered w-full" value={password} onChange={(e) => setPassword(e.target.value)} />
-							<button type="button" className="absolute right-2 top-2 btn btn-sm btn-ghost" onClick={() => setShowPassword(!showPassword)}>
-								{showPassword ? "🙈" : "👁️"}
+						<input type="email" required placeholder="Email" className="input w-full" maxLength={50} value={email} onChange={(e) => setEmail(e.target.value)} />
+						<div className="relative flex items-center w-full">
+							<input type={showPassword ? "text" : "password"} required maxLength={50} placeholder="Password" className="inpu w-full pr-10" value={password} onChange={(e) => setPassword(e.target.value)} />
+							<button onClick={() => setShowPassword(!showPassword)} type="button" className="absolute right-3" aria-label={showPassword ? "Hide password" : "Show password"}>
+								<img src={`/svgs/eye${showPassword ? "" : "-off"}.svg`} alt="" className="w-6 h-6"></img>
 							</button>
 						</div>
 					</div>
