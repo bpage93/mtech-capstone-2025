@@ -2,7 +2,7 @@ import Loading from "@/app/canvas/loading";
 import { useState, useEffect } from "react";
 
 export default function AdminTable({ data, currentPage, setCurrentPage, pagination }) {
-	return !data || data === undefined ? (
+	return !data || data?.length === 0 ? (
 		<Loading />
 	) : (
 		<div className="flex shadow-md bg-[#160f33] text-violet-100 overflow-auto">
@@ -15,27 +15,28 @@ export default function AdminTable({ data, currentPage, setCurrentPage, paginati
 				{data?.length > 0 &&
 					Object.keys(data[0]).map((key, index) => {
 						return (
-							<h3 key={index} className="flex items-center justify-center px-5 h-13">
+							<h3 key={index} className="flex items-center justify-center px-5 h-13 text-center">
 								{key}
 							</h3>
 						);
 					})}
 			</div>
 			{/* Body Data */}
-			{data.map((user, index) => {
-				return (
-					<div key={index} className="flex flex-col font-medium text-lg w-full">
-						<h3 className="bg-[#18153a] flex items-center justify-center px-3 h-13">{index + 1}</h3>
-						{Object.values(user).map((data, index) => {
-							return (
-								<span key={index} className="flex items-center justify-center px-3 h-13 border-l border-white/10">
-									{data}
-								</span>
-							);
-						})}
-					</div>
-				);
-			})}
+			{data?.length > 0 &&
+				data.map((user, index) => {
+					return (
+						<div key={index} className="flex flex-col font-medium text-lg w-full">
+							<h3 className="bg-[#18153a] flex items-center justify-center px-3 h-13">{index + 1}</h3>
+							{Object.values(user).map((data, index) => {
+								return (
+									<span key={index} className="text-center flex items-center justify-center px-3 h-13 border-l border-white/10">
+										{data}
+									</span>
+								);
+							})}
+						</div>
+					);
+				})}
 		</div>
 	);
 }
