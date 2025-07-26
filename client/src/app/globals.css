@@ -78,5 +78,3 @@ input[type="password"]::-moz-reveal-password {
 input[type="password"]::-ms-reveal {
 	display: none !important;
 }
-
-/* Daisy-UI's input class but modified */
