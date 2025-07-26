@@ -9,10 +9,32 @@ const saltRounds = 10;
 
 const router = express.Router();
 
-router.get("/get", async (req, res) => {
+router.get("/view", async (req, res) => {
+	const token = req.headers.authorization?.split(" ")[1];
+	if (!token) {
+		return res.status(401).json({ error: "No token provided" });
+	}
+	const isAdminResponse = await fetch(`${process.env.BACKEND_URL}/api/auth/admin`, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+	const isAdminData = await isAdminResponse.json();
+	if (!isAdminResponse.ok) {
+		return res.status(403).json({ error: "access denied" });
+	}
+
+	const page = parseInt(req.query.page) || 1;
+	const usersPerPage = 5;
+	const offset = usersPerPage * (page - 1);
 	try {
-		const results = await query(`
+		const totalCountResults = await query(`SELECT count(*) FROM "user"`);
+		const totalCount = parseInt(totalCountResults.rows[0].count);
+		const maxPage = Math.ceil(totalCount / usersPerPage);
+		const userResults = await query(
+			`
             SELECT
+                usr.id,
                 usr.role,
                 usr.email,
                 usr.firstname,
@@ -23,9 +45,22 @@ router.get("/get", async (req, res) => {
                 address.city,
                 address.state,
                 address.zip
-            FROM "user" usr JOIN address ON usr.id = address.user_id;
-        `);
-		res.status(200).json(results.rows);
+            FROM "user" usr JOIN address ON usr.id = address.user_id
+            ORDER BY usr.lastname
+            LIMIT $1
+            OFFSET $2;
+        `,
+			[usersPerPage, offset]
+		);
+		res.status(200).json({
+			users: userResults.rows,
+			pagination: {
+				current_page: page,
+				total_pages: maxPage,
+				has_next_page: page < maxPage,
+				has_prev_page: page > 1,
+			},
+		});
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
@@ -59,7 +94,8 @@ router.post("/create", async (req, res) => {
 
 		await client.query("COMMIT");
 
-		res.status(200).json(user);
+		const token = jwt.sign({ userId }, jwtSecret, { expiresIn: "1h" });
+		res.status(200).json({ token, role: "student" });
 	} catch (error) {
 		await client.query("ROLLBACK");
 		if (error.code === "23505") {
@@ -98,7 +134,7 @@ router.post("/login", async (req, res) => {
 			if (!passwordMatch) {
 				return res.status(401).json({ error: "Invalid Credentials" });
 			} else {
-                const token = jwt.sign({ userId: user.id }, jwtSecret, { expiresIn: "1h" });
+				const token = jwt.sign({ userId: user.id }, jwtSecret, { expiresIn: "1h" });
 				return res.status(200).json({ message: "Login successful", token, role: user.role });
 			}
 		}

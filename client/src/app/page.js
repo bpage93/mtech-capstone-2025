@@ -14,7 +14,7 @@ export default function Home() {
 	const [street, setStreet] = useState("");
 	const [city, setCity] = useState("");
 	const [state, setState] = useState("");
-	const [zip, setZip] = useState();
+	const [zip, setZip] = useState("");
 	const [password, setPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,7 +62,7 @@ export default function Home() {
 				return;
 			}
 			// add user to database
-			await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/create`, {
+			const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/create`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -81,16 +81,17 @@ export default function Home() {
 						zip,
 					},
 				}),
-			}).then((res) => {
-				if (res.status === 200) {
-					router.push("/canvas/student");
-				} else if (res.status === 409) {
-					document.getElementById("field-warning").classList.remove("hidden");
-					document.getElementById("field-warning").innerText = "Email is already associated with an existing user";
-					setIsSubmitting(false);
-					return;
-				}
 			});
+			if (res.ok) {
+				const data = await res.json();
+				localStorage.setItem("jwtToken", data.token);
+				router.push(`/canvas/${data.role}`);
+			} else if (res.status === 409) {
+				document.getElementById("field-warning").classList.remove("hidden");
+				document.getElementById("field-warning").innerText = "Email is already associated with an existing user";
+				setIsSubmitting(false);
+				return;
+			}
 		} else if (mode === "login") {
 			const fields = { email, password };
 			for (let field in fields) {
@@ -198,7 +199,7 @@ export default function Home() {
 					<div className={`grid grid-cols-1 ${mode === "signup" && "sm:grid-cols-2"} gap-3`}>
 						<input type="email" required placeholder="Email" className="input w-full" maxLength={50} value={email} onChange={(e) => setEmail(e.target.value)} />
 						<div className="relative flex items-center w-full">
-							<input type={showPassword ? "text" : "password"} required maxLength={50} placeholder="Password" className="input w-full pr-10" value={password} onChange={(e) => setPassword(e.target.value)} />
+							<input type={showPassword ? "text" : "password"} required maxLength={50} placeholder="Password" className="input w-full pr-10 !z-0" value={password} onChange={(e) => setPassword(e.target.value)} />
 							<button onClick={() => setShowPassword(!showPassword)} type="button" className="absolute right-3" aria-label={showPassword ? "Hide password" : "Show password"}>
 								<img src={`/svgs/eye${showPassword ? "" : "-off"}.svg`} alt="" className="w-6 h-6"></img>
 							</button>

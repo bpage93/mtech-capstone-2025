@@ -7,64 +7,33 @@ import AdminTable from "./components/AdminTable";
 export default function AdminCanvasPage() {
 	const { updateTitle } = useTitleContext();
 	const availableModes = ["Users", "Courses"];
-    const [mode, setMode] = useState(availableModes[0]);
-    const [currentPage, setCurrentPage] = useState(3);
-    const [maxPage, setMaxPage] = useState(10);
-    const [users, setUsers] = useState(null);
-
-    // temporary user data
-    const tempUsers = [
-		{
-			user_id: 9,
-			role: "student",
-			email: "email@fake.com",
-			firstname: "Nathan",
-			lastname: "Adams",
-			telephone: "9999999999",
-			username: "nathanadams",
-		},
-		{
-			user_id: 8,
-			role: "admin",
-			email: "admin@gmail.com",
-			firstname: "John",
-			lastname: "Smith",
-			telephone: "1234567890",
-			username: "johnsmith",
-		},
-		{
-			user_id: 4,
-			role: "student",
-			email: "student@gmail.com",
-			firstname: "Wheres",
-			lastname: "Waldo",
-			telephone: "09876543221",
-			username: "whereswaldo",
-		},
-		{
-			user_id: 4,
-			role: "student",
-			email: "student@gmail.com",
-			firstname: "Wheres",
-			lastname: "Waldo",
-			telephone: "09876543221",
-			username: "whereswaldo",
-		},
-		{
-			user_id: 4,
-			role: "student",
-			email: "student@gmail.com",
-			firstname: "Wheres",
-			lastname: "Waldo",
-			telephone: "09876543221",
-			username: "whereswaldo",
-		},
-	];
+	const [mode, setMode] = useState(availableModes[0]);
+	const [currentPage, setCurrentPage] = useState(1);
+	const [users, setUsers] = useState(null);
+	const [pagination, setPagination] = useState({});
 
 	useEffect(() => {
-        updateTitle("Admin Dashboard");
-        setUsers(tempUsers);
+		updateTitle("Admin Dashboard");
+		setCurrentPage(1); // trigger loading of users
 	}, []);
+
+	useEffect(() => {
+		console.log(currentPage);
+		const token = localStorage.getItem("jwtToken");
+		async function getUsers() {
+			const usersRequest = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/view?page=${currentPage}`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			if (usersRequest.ok) {
+				const { users, pagination } = await usersRequest.json();
+				setUsers(users);
+				setPagination(pagination);
+			}
+		}
+		getUsers();
+	}, [currentPage]);
 
 	return (
 		<div className="flex flex-col h-full rounded-lg overflow-hidden">
@@ -79,7 +48,7 @@ export default function AdminCanvasPage() {
 			</div>
 
 			<div className="bg-[#140D2E] h-full">
-                <AdminTable users={users} currentPage={currentPage} setCurrentPage={setCurrentPage} maxPage={maxPage} setMaxPage={setMaxPage} />
+				<AdminTable data={users} currentPage={currentPage} setCurrentPage={setCurrentPage} pagination={pagination} />
 			</div>
 		</div>
 	);
