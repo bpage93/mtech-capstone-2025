@@ -1,10 +1,7 @@
-// ✅ FILE: app/page.js
 "use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import AuthForm from "/components/AuthForm";
-import { Email, Apple, Google, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useAuth } from "@/app/contexts/AuthContext";
 
 export default function Home() {
@@ -17,7 +14,7 @@ export default function Home() {
 	const [street, setStreet] = useState("");
 	const [city, setCity] = useState("");
 	const [state, setState] = useState("");
-	const [zip, setZip] = useState();
+	const [zip, setZip] = useState("");
 	const [password, setPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,7 +31,7 @@ export default function Home() {
 				router.push(`/canvas/${returnedUserData.role}`);
 			}
 		})();
-    }, []);
+	}, []);
 
 	useEffect(() => {
 		document.getElementById("field-warning").classList.add("hidden");
@@ -42,7 +39,7 @@ export default function Home() {
 
 	async function handleSubmit(e) {
 		e.preventDefault();
-        setIsSubmitting(true);
+		setIsSubmitting(true);
 		document.getElementById("field-warning").classList.add("hidden");
 		if (mode === "signup") {
 			// client-side input validation
@@ -65,7 +62,7 @@ export default function Home() {
 				return;
 			}
 			// add user to database
-			await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/create`, {
+			const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/create`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -84,16 +81,17 @@ export default function Home() {
 						zip,
 					},
 				}),
-			}).then((res) => {
-				if (res.status === 200) {
-					router.push("/canvas/student");
-				} else if (res.status === 409) {
-					document.getElementById("field-warning").classList.remove("hidden");
-					document.getElementById("field-warning").innerText = "Email is already associated with an existing user";
-					setIsSubmitting(false);
-					return;
-				}
 			});
+			if (res.ok) {
+				const data = await res.json();
+				localStorage.setItem("jwtToken", data.token);
+				router.push(`/canvas/${data.role}`);
+			} else if (res.status === 409) {
+				document.getElementById("field-warning").classList.remove("hidden");
+				document.getElementById("field-warning").innerText = "Email is already associated with an existing user";
+				setIsSubmitting(false);
+				return;
+			}
 		} else if (mode === "login") {
 			const fields = { email, password };
 			for (let field in fields) {
@@ -143,10 +141,6 @@ export default function Home() {
 		}
 	}
 
-	const handleGoogleLogin = () => {
-		window.location.href = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/auth/google`;
-	};
-
 	const usStates = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"];
 
 	function formatPhoneNumber(value) {
@@ -158,15 +152,15 @@ export default function Home() {
 
 	return (
 		<div className="min-h-screen flex items-center justify-center animate-gradient-circular p-4 bg-gradient-to-r from-purple-900 via-black to-purple-900 animate-gradient">
-			<div className="flex flex-col gap-y-3 rounded-xl p-5 w-full max-w-md bg-base-200 shadow-xl text-white">
-				<h2 className="text-center text-2xl my-2 font-bold">{mode === "signup" ? "Create an Account" : "Sign Into Your Account"}</h2>
+			<div className="flex flex-col gap-y-3 rounded-xl p-5 w-full max-w-120 bg-base-200 shadow-xl">
+				<h2 className="text-center text-2xl my-2 font-bold">{mode === "signup" ? "Create an Account" : "Sign in to your Account"}</h2>
 
 				<div className="flex justify-center mb-1 join">
 					<button onClick={() => setMode("signup")} className={`btn join-item ${mode === "signup" ? "btn-accent" : "btn-outline"}`}>
-						Sign Up
+						Sign up
 					</button>
 					<button onClick={() => setMode("login")} className={`btn join-item ${mode === "login" ? "btn-accent" : "btn-outline"}`}>
-						Sign In
+						Sign in
 					</button>
 				</div>
 
@@ -205,31 +199,21 @@ export default function Home() {
 					<div className={`grid grid-cols-1 ${mode === "signup" && "sm:grid-cols-2"} gap-3`}>
 						<input type="email" required placeholder="Email" className="input w-full" maxLength={50} value={email} onChange={(e) => setEmail(e.target.value)} />
 						<div className="relative flex items-center w-full">
-							<input type={showPassword ? "text" : "password"} required maxLength={50} placeholder="Password" className="inpu w-full pr-10" value={password} onChange={(e) => setPassword(e.target.value)} />
+							<input type={showPassword ? "text" : "password"} required maxLength={50} placeholder="Password" className="input w-full pr-10 !z-0" value={password} onChange={(e) => setPassword(e.target.value)} />
 							<button onClick={() => setShowPassword(!showPassword)} type="button" className="absolute right-3" aria-label={showPassword ? "Hide password" : "Show password"}>
 								<img src={`/svgs/eye${showPassword ? "" : "-off"}.svg`} alt="" className="w-6 h-6"></img>
 							</button>
 						</div>
 					</div>
 
-					<div id="field-warning" className="text-red-500 text-sm hidden">
+					<div id="field-warning" className="text-red-500 hidden">
 						Must fill out all fields
 					</div>
 
-					<button disabled={isSubmitting} type="submit" className="btn w-full border-white mt-1 hover:from-purple-900 hover:via-black hover:to-black hover:bg-gradient-to-r">
-						{mode === "signup" ? "Create Account" : "Login"}
+					<button disabled={isSubmitting} type="submit" className="btn w-full text-base !h-11 border-white my-2 hover:from-purple-900 hover:via-black hover:to-black hover:bg-gradient-to-r">
+						{mode === "signup" ? "Create Account" : "Sign in"}
 					</button>
 				</form>
-
-				<div className="divider">OR</div>
-
-				<button onClick={handleGoogleLogin} className="btn btn-outline w-full border-white hover:from-purple-900 hover:via-black hover:to-black hover:bg-gradient-to-r">
-					<Google className="mr-2" /> Google
-				</button>
-
-				<p className="text-center text-sm text-gray-400 mt-4">
-					By creating an account, you agree to our <span className="underline">Terms & Service</span>.
-				</p>
 			</div>
 		</div>
 	);
