@@ -18,7 +18,6 @@ export default function AdminCanvasPage() {
 	}, []);
 
 	useEffect(() => {
-		console.log(currentPage);
 		const token = localStorage.getItem("jwtToken");
 		async function getUsers() {
 			const usersRequest = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/view?page=${currentPage}`, {
@@ -28,6 +27,7 @@ export default function AdminCanvasPage() {
 			});
 			if (usersRequest.ok) {
 				const { users, pagination } = await usersRequest.json();
+				console.log(users);
 				setUsers(users);
 				setPagination(pagination);
 			}
@@ -47,7 +47,7 @@ export default function AdminCanvasPage() {
 				})}
 			</div>
 
-			<div className="bg-[#140D2E] h-full">
+			<div className="bg-[#140D2E] h-full overflow-scroll">
 				<AdminTable data={users} currentPage={currentPage} setCurrentPage={setCurrentPage} pagination={pagination} />
 			</div>
 		</div>

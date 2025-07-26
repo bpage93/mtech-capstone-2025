@@ -5,7 +5,7 @@ export default function AdminTable({ data, currentPage, setCurrentPage, paginati
 	return !data || data?.length === 0 ? (
 		<Loading />
 	) : (
-		<div className="flex shadow-md bg-[#160f33] text-violet-100 overflow-auto">
+		<div className="flex shadow-md bg-[#160f33] text-violet-100">
 			{/* Header Data */}
 			<div className="bg-[#18153a] flex flex-col font-bold text-xl w-full max-w-60">
 				{/* Pagination */}
