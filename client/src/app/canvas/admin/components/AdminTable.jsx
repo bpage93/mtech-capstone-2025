@@ -1,26 +1,64 @@
-export default function AdminTable({ users }) {
+import Loading from "@/app/canvas/loading";
+
+export default function AdminTable ({ users, currentPage, setCurrentPage, maxPage, setMaxPage }) {
 	return (
-		<div className="flex bg-[#160f33] overflow-auto">
-			{/* Headers */}
-			<div className="bg-[#18153a] flex flex-col text-violet-200 font-bold text-xl w-full max-w-60">
-				<h3 className="flex items-center justify-center px-3 h-13"></h3>
-				{users &&
-					Object.keys(users[0]).map((key) => {
-						return <h3 className="flex items-center justify-center px-3 h-13 border-r-2 border-indigo-900">{key}</h3>;
+		!users ? <Loading /> : (
+			<div className="flex shadow-md bg-[#160f33] text-violet-100 overflow-auto">
+				{/* Header Data */}
+				<div className="bg-[#18153a] flex flex-col font-bold text-xl w-full max-w-60">
+					{/* Pagination */}
+					<div className="flex items-center justify-center px-5 h-13">
+						<Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} maxPage={maxPage} setMaxPage={setMaxPage} />
+					</div>
+					{Object.keys(users[0]).map((key, index) => {
+						return (
+							<h3 key={index} className="flex items-center justify-center px-5 h-13">
+								{key}
+							</h3>
+						);
 					})}
-			</div>
-			{/* User Data */}
-			{users &&
-				users.map((user, index) => {
+				</div>
+				{/* User Data */}
+				{users.map((user, index) => {
 					return (
-						<div className="flex flex-col font-medium text-lg w-full text-violet-100">
-							<h3 className="bg-[#18153a] flex items-center justify-center px-3 h-13 text-violet-200 border-b-2 border-indigo-900">{index + 1}</h3>
-							{Object.values(user).map((data) => {
-								return <span className="flex items-center justify-center px-3 h-13">{data}</span>;
+						<div key={index} className="flex flex-col font-medium text-lg w-full">
+							<h3 className="bg-[#18153a] flex items-center justify-center px-3 h-13">{index + 1}</h3>
+							{Object.values(user).map((data, index) => {
+								return (
+									<span key={index} className="flex items-center justify-center px-3 h-13 border-l border-white/10">
+										{data}
+									</span>
+								);
 							})}
 						</div>
 					);
 				})}
+			</div>
+		)
+	);
+}
+
+function Pagination({ currentPage, setCurrentPage, maxPage, setMaxPage }) {
+	function handleSubmission(e) {
+		e.preventDefault();
+	}
+	return (
+		<div className="flex justify-center items-center px-2 py-1 rounded-full bg-indigo-900">
+			<IconButton svgPath="/svgs/first_page.svg" label="navigate to the first page" handleClick={() => setCurrentPage(1)} />
+			<IconButton svgPath="/svgs/chevron_backward.svg" label="navigate one page backward" handleClick={() => setCurrentPage(parseInt(currentPage) - 1)} />
+			<form onSubmit={handleSubmission}>
+				<input className="mx-2 w-7 text-center" type="text" placeholder="1" value={currentPage} onChange={(e) => setCurrentPage(e.target.value.replace(/\D/g, ""))} />
+			</form>
+			<IconButton svgPath="/svgs/chevron_forward.svg" label="navigate one page forward" handleClick={() => setCurrentPage(parseInt(currentPage) + 1)} />
+			<IconButton svgPath="/svgs/last_page.svg" label="navigate to the last page" handleClick={() => setCurrentPage(maxPage)} />
 		</div>
+	);
+}
+
+function IconButton({ svgPath, label, handleClick }) {
+	return (
+		<button aria-label={label} className="w-7 h-7 cursor-pointer" onClick={handleClick}>
+			<img src={svgPath} width={100} />
+		</button>
 	);
 }

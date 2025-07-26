@@ -4,12 +4,16 @@ import { useTitleContext } from "../contexts/TitleContext";
 import { useState, useEffect } from "react";
 import AdminTable from "./components/AdminTable";
 
-export default function TeacherCanvasPage() {
+export default function AdminCanvasPage() {
 	const { updateTitle } = useTitleContext();
-	const availableModes = ["Students", "Courses"];
+	const availableModes = ["Users", "Courses"];
     const [mode, setMode] = useState(availableModes[0]);
+    const [currentPage, setCurrentPage] = useState(3);
+    const [maxPage, setMaxPage] = useState(10);
+    const [users, setUsers] = useState(null);
+
     // temporary user data
-    const users = [
+    const tempUsers = [
 		{
 			user_id: 9,
 			role: "student",
@@ -37,10 +41,29 @@ export default function TeacherCanvasPage() {
 			telephone: "09876543221",
 			username: "whereswaldo",
 		},
+		{
+			user_id: 4,
+			role: "student",
+			email: "student@gmail.com",
+			firstname: "Wheres",
+			lastname: "Waldo",
+			telephone: "09876543221",
+			username: "whereswaldo",
+		},
+		{
+			user_id: 4,
+			role: "student",
+			email: "student@gmail.com",
+			firstname: "Wheres",
+			lastname: "Waldo",
+			telephone: "09876543221",
+			username: "whereswaldo",
+		},
 	];
 
 	useEffect(() => {
-		updateTitle("Admin Dashboard");
+        updateTitle("Admin Dashboard");
+        setUsers(tempUsers);
 	}, []);
 
 	return (
@@ -56,7 +79,7 @@ export default function TeacherCanvasPage() {
 			</div>
 
 			<div className="bg-[#140D2E] h-full">
-				<AdminTable users={users} />
+                <AdminTable users={users} currentPage={currentPage} setCurrentPage={setCurrentPage} maxPage={maxPage} setMaxPage={setMaxPage} />
 			</div>
 		</div>
 	);
@@ -64,10 +87,8 @@ export default function TeacherCanvasPage() {
 
 function TabButton({ children, mode, setMode }) {
 	return (
-		<button className={`${mode === children ? "bg-indigo-600" : "bg-indigo-950"} w-full rounded-t-lg join px-4 py-3 shadow-lg`} onClick={() => setMode(children)}>
+		<button className={`${mode === children ? "bg-indigo-600 shadow-indigo-800 shadow-lg/30" : "bg-[#18153a]"} w-full rounded-t-lg join px-4 py-3 z-1`} onClick={() => setMode(children)}>
 			<span className="w-full text-center font-medium">{children}</span>
 		</button>
 	);
 }
-
-// "bg-indigo-600" : "bg-indigo-95"

@@ -44,7 +44,7 @@ function NavButton({ children, svgPath, altTitle = "", route, currentRoute, setC
     return (
         <button
             aria-label={altTitle}
-            className={`${currentRoute === route ? "bg-indigo-600" : "bg-indigo-950"} shadow-md w-full px-4 py-3 rounded-lg flex items-center gap-x-3 font-medium`}
+            className={`${currentRoute === route ? "bg-indigo-600 shadow-md shadow-indigo-800" : "bg-indigo-950 shadow-md"} w-full px-4 py-3 rounded-lg flex items-center gap-x-3 font-medium`}
             onClick={() => {
                 setCurrentRoute(route);
                 router.push(route);
