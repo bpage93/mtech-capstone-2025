@@ -27,8 +27,8 @@ function MainLayout({ children }) {
 
 			<div className="flex flex-col gap-4 w-full max-h-screen">
 				<div className="flex flex-col gap-y-3 rounded-md h-full overflow-auto">
-					<div className="bg-[#120C2A] rounded-xl p-3 h-full">
-						<div className="px-4 py-2">
+					<div className="bg-[#120C2A] rounded-xl px-7 py-5 h-full flex flex-col gap-y-8">
+						<div className="">
 							<TitleDisplay title={title} />
 						</div>
 						{children}
