@@ -44,10 +44,20 @@ router.get("/view", async (req, res) => {
         `,
 			[coursesPerPage, offset]
 		);
-
+		const modifiedData = coursesResult.rows.map((row) => {
+			const wrapped = {};
+			for (const [key, value] of Object.entries(row)) {
+				const [table, field] = key.split("_", 2);
+				wrapped[field] = {
+					value,
+					table,
+				};
+			}
+			return wrapped;
+		});
 		res.status(200).json({
-            data: coursesResult.rows,
-            table: "course",
+			data: modifiedData,
+			table: "course",
 			pagination: {
 				current_page: page,
 				total_pages: maxPage,
