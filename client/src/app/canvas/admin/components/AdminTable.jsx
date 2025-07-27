@@ -58,7 +58,8 @@ export default function AdminTable({ data, currentPage, setCurrentPage, paginati
 	);
 }
 
-function EditTableData({ data, selectedData, setEditing }) {
+function EditTableData ({ data, selectedData, setEditing }) {
+    console.log(selectedData)
 	return (
 		<div className="bg-[#160f33] relative top-0 left-0 w-full h-full z-10">
 			<button className="absolute left-0 top-0 m-5 p-2 w-15 h-15 hover:cursor-pointer" onClick={() => setEditing(false)}>
