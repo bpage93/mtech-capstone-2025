@@ -3,6 +3,7 @@
 import { useTitleContext } from "../contexts/TitleContext";
 import { useState, useEffect } from "react";
 import AdminTable from "./components/AdminTable";
+import { useRouter } from "next/navigation";
 
 export default function AdminCanvasPage() {
 	const { updateTitle } = useTitleContext();
@@ -14,6 +15,8 @@ export default function AdminCanvasPage() {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [tableData, setTableData] = useState(null);
 	const [pagination, setPagination] = useState({});
+
+	const router = useRouter();
 
 	useEffect(() => {
 		updateTitle("Admin Dashboard");
@@ -40,6 +43,8 @@ export default function AdminCanvasPage() {
 				const { data, pagination } = await dataRequest.json();
 				setTableData(data);
 				setPagination(pagination);
+			} else if (dataRequest.status === 403 || dataRequest.status === 401) {
+				router.push("/");
 			}
 		}
 		getData();
