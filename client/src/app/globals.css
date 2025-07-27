@@ -2,39 +2,39 @@
 @plugin "daisyui";
 
 :root {
-	--background: #ffffff;
-	--foreground: #171717;
+    --background: #ffffff;
+    --foreground: #171717;
 }
 
 @media (prefers-color-scheme: dark) {
-	:root {
-		--background: #0a0a0a;
-		--foreground: #ededed;
-	}
+    :root {
+        --background: #0a0a0a;
+        --foreground: #ededed;
+    }
 }
 
 /* frontend/src/app/globals.css */
 @keyframes gradient-circular {
-	0% {
-		background-position: 0% 50%;
-	}
-	25% {
-		background-position: 50% 100%;
-	}
-	50% {
-		background-position: 100% 50%;
-	}
-	75% {
-		background-position: 50% 0%;
-	}
-	100% {
-		background-position: 0% 50%;
-	}
+    0% {
+        background-position: 0% 50%;
+    }
+    25% {
+        background-position: 50% 100%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    75% {
+        background-position: 50% 0%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 .animate-gradient-circular {
-	background-size: 200% 200%;
-	animation: gradient-circular 8s ease infinite;
+    background-size: 200% 200%;
+    animation: gradient-circular 8s ease infinite;
 }
 
 @keyframes spinbananas {
@@ -65,4 +65,20 @@
 
 .confetti {
     animation: confettiPop 1s ease-out forwards;
+}
+
+@keyframes bananaGlow {
+    0% {
+        filter: drop-shadow(0 0 2px rgba(255, 255, 0, 0.5));
+    }
+    50% {
+        filter: drop-shadow(0 0 20px rgba(255, 255, 0, 0.9));
+    }
+    100% {
+        filter: drop-shadow(0 0 2px rgba(255, 255, 0, 0.5));
+    }
+}
+
+.banana-glow {
+    animation: bananaGlow 1.5s ease-in-out infinite;
 }
