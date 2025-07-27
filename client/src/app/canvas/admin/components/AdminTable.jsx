@@ -12,13 +12,30 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 		setSelectedData({ index: 0, key });
 	}, [data]);
 
-	function handleSaveChanges(newValue) {
+	async function handleSaveChanges(newValue) {
+		const updatedData = [...data];
+		updatedData[selectedData.index][selectedData.key].value = newValue;
+
+		const table = updatedData[selectedData.index][selectedData.key].table;
+		const field = selectedData.key;
+		const value = newValue;
+
+		const token = localStorage.getItem("jwtToken");
+		const updateResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/database/update`, {
+			method: "PATCH",
+			headers: {
+				Authorization: `Bearer ${token}`,
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ table, field, value }),
+		});
+
+		if (!updateResponse.ok) {
+			return;
+		}
+
+		setData(updatedData);
 		setEditing(false);
-
-		const updated = [...data];
-		updated[selectedData.index][selectedData.key].value = newValue;
-
-		setData(updated);
 	}
 
 	return !data || data?.length === 0 ? (
@@ -74,6 +91,7 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 
 function EditTableData({ data, selectedData, setEditing, handleSaveChanges }) {
 	const [inputValue, setInputValue] = useState(data[selectedData.index][selectedData.key].value);
+	const showWarning = selectedData.key === "id";
 	console.log(selectedData);
 	return (
 		<div className="bg-[#160f33] relative w-full h-full flex justify-center items-center">
@@ -82,14 +100,20 @@ function EditTableData({ data, selectedData, setEditing, handleSaveChanges }) {
 			</button>
 			<div className="flex flex-col gap-y-2 w-1/2">
 				<textarea value={inputValue} placeholder="Your changes here..." className="w-full min-h-20 h-60 max-h-100 bg-indigo-950 px-3 py-2 rounded-lg shadow-md border border-indigo-900 focus:outline-0" onChange={(e) => setInputValue(e.target.value)} />
-				<div className="flex gap-2">
-					<button className="bg-sky-700 border-2 border-sky-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md" onClick={() => handleSaveChanges(inputValue)}>
-						Save Changes
-					</button>
-					<button className="bg-rose-700 border-2 border-rose-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md" onClick={() => setEditing(false)}>
-						Cancel
-					</button>
-				</div>
+				{showWarning ? (
+					<span id="warning-field" className="text-yellow-600">
+						You cannot change this field!
+					</span>
+				) : (
+					<div className="flex gap-2">
+						<button className="bg-sky-700 border-2 border-sky-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md" onClick={() => handleSaveChanges(inputValue)}>
+							Save Changes
+						</button>
+						<button className="bg-rose-700 border-2 border-rose-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md" onClick={() => setEditing(false)}>
+							Cancel
+						</button>
+					</div>
+				)}
 			</div>
 		</div>
 	);

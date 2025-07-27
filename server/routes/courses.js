@@ -1,7 +1,5 @@
 const express = require("express");
 const { pool, query } = require("../database/postgresQuery");
-const jwt = require("jsonwebtoken");
-const jwtSecret = process.env.JWT_SECRET;
 
 const router = express.Router();
 
