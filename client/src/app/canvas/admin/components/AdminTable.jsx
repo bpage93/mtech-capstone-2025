@@ -3,12 +3,14 @@ import { useState, useEffect } from "react";
 
 export default function AdminTable({ data, currentPage, setCurrentPage, pagination }) {
 	const [selectedData, setSelectedData] = useState([0, "id"]);
+	const [editing, setEditing] = useState(false);
 
 	return !data || data?.length === 0 ? (
 		<Loading />
 	) : (
-		<div className="flex shadow-md bg-[#160f33] text-violet-100">
+		<div className="relative flex shadow-md bg-[#160f33] text-violet-100">
 			{/* Header Data */}
+			{editing && <EditTableData data={data} selectedData={selectedData} />}
 			<div className="bg-[#18153a] flex flex-col font-bold text-xl max-w-60 sticky">
 				{/* Pagination */}
 				<div className="flex items-center justify-center px-5 h-13">
@@ -37,7 +39,7 @@ export default function AdminTable({ data, currentPage, setCurrentPage, paginati
 											<div className="flex items-center min-w-0 w-full gap-x-2">
 												<span className="truncate flex-1 text-center">{data}</span>
 												{dataSelected && (
-													<button type="button" className="flex-shrink-0 w-7 h-7 p-1 hover:cursor-pointer rounded-lg bg-indigo-700" aria-label="Edit this data">
+													<button type="button" className="flex-shrink-0 w-7 h-7 p-1 hover:cursor-pointer rounded-lg bg-indigo-700" aria-label="Edit this data" onClick={() => setEditing(true)}>
 														<img src="/svgs/edit.svg" alt="Edit" className="w-full h-full" />
 													</button>
 												)}
@@ -52,6 +54,23 @@ export default function AdminTable({ data, currentPage, setCurrentPage, paginati
 		</div>
 	);
 }
+
+function EditTableData({ data, selectedData }) {
+	return (
+		<div className="bg-[#160f33] absolute top-0 left-0 w-full h-full z-10">
+			<button className="absolute left-0 top-0 m-10 w-10 h-10">
+				<img src="/svgs/arrow_back.svg" alt="" className="w-full h-full" />
+			</button>
+		</div>
+	);
+}
+
+//
+//
+//
+//
+//
+//
 
 function Pagination({ currentPage, setCurrentPage, pagination }) {
 	const [inputPageValue, setInputPageValue] = useState(currentPage);
