@@ -2,7 +2,7 @@ import Loading from "@/app/canvas/loading";
 import { useState, useEffect } from "react";
 
 export default function AdminTable({ data, currentPage, setCurrentPage, pagination }) {
-	const [selectedData, setSelectedData] = useState("0 0");
+	const [selectedData, setSelectedData] = useState([0, "id"]);
 
 	return !data || data?.length === 0 ? (
 		<Loading />
@@ -25,23 +25,29 @@ export default function AdminTable({ data, currentPage, setCurrentPage, paginati
 			{/* Body Data */}
 			<div className="flex overflow-x-auto w-full">
 				{data?.length > 0 &&
-					data.map((row, i) => (
-						<div key={i} className="flex flex-col font-medium text-lg w-full min-w-50">
-							<h3 className={`${selectedData.split("|||")[0] === String(i) ? "bg-indigo-800" : "bg-[#18153a]"} flex items-center justify-center px-4 h-13 sticky`}>{i + 1}</h3>
-							{Object.entries(row).map(([key, data], j) => (
-								<div key={j} className="flex items-center justify-center px-4 h-13 border-l border-white/10">
-									<div className="flex items-center min-w-0 w-full gap-x-2" onClick={() => setSelectedData(`${i}|||${key}`)}>
-										<span className="truncate flex-1 text-center">{data}</span>
-										{selectedData === `${i}|||${key}` && (
-											<button type="button" className="flex-shrink-0 w-7 h-7 p-1 hover:cursor-pointer rounded-lg bg-indigo-700" aria-label="Edit this data">
-												<img src="/svgs/edit.svg" alt="Edit" className="w-full h-full" />
-											</button>
-										)}
-									</div>
-								</div>
-							))}
-						</div>
-					))}
+					data.map((row, index) => {
+						const rowSelected = selectedData[0] === index;
+						return (
+							<div key={index} className="flex flex-col font-medium text-lg w-full min-w-40">
+								<h3 className={`${rowSelected ? "bg-indigo-800" : "bg-[#18153a]"} flex items-center justify-center px-4 h-13 sticky`}>{index + 1}</h3>
+								{Object.entries(row).map(([key, data], j) => {
+									const dataSelected = selectedData[0] === index && selectedData[1] === key;
+									return (
+										<div key={j} className={`${dataSelected ? "bg-indigo-900" : ""} flex items-center justify-center px-4 h-13 border-l border-white/10 hover:bg-indigo-900`} onClick={() => setSelectedData([index, key])}>
+											<div className="flex items-center min-w-0 w-full gap-x-2">
+												<span className="truncate flex-1 text-center">{data}</span>
+												{dataSelected && (
+													<button type="button" className="flex-shrink-0 w-7 h-7 p-1 hover:cursor-pointer rounded-lg bg-indigo-700" aria-label="Edit this data">
+														<img src="/svgs/edit.svg" alt="Edit" className="w-full h-full" />
+													</button>
+												)}
+											</div>
+										</div>
+									);
+								})}
+							</div>
+						);
+					})}
 			</div>
 		</div>
 	);
