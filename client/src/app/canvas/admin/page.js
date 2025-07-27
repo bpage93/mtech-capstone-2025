@@ -6,39 +6,51 @@ import AdminTable from "./components/AdminTable";
 
 export default function AdminCanvasPage() {
 	const { updateTitle } = useTitleContext();
-	const availableModes = ["Users", "Courses"];
-	const [mode, setMode] = useState(availableModes[0]);
+	const availableModes = {
+		users: "Users",
+		courses: "Courses"
+	}
+	const [mode, setMode] = useState(availableModes.users);
 	const [currentPage, setCurrentPage] = useState(1);
-	const [users, setUsers] = useState(null);
+	const [tableData, setTableData] = useState(null);
 	const [pagination, setPagination] = useState({});
 
 	useEffect(() => {
 		updateTitle("Admin Dashboard");
-		setCurrentPage(1); // trigger loading of users
 	}, []);
 
 	useEffect(() => {
-		console.log(currentPage);
+		setCurrentPage(0)
+	}, [mode])
+
+	useEffect(() => {
+		setTableData(null);
+		if (currentPage < 1) {
+			setCurrentPage(1);
+			return;
+		}
 		const token = localStorage.getItem("jwtToken");
-		async function getUsers() {
-			const usersRequest = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/view?page=${currentPage}`, {
+		async function getData () {
+			
+			const dataRequest = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/${mode === availableModes.users ? "users" : "courses"}/view?page=${currentPage}`, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
 			});
-			if (usersRequest.ok) {
-				const { users, pagination } = await usersRequest.json();
-				setUsers(users);
+			if (dataRequest.ok) {
+				const { data, pagination } = await dataRequest.json();
+				console.log(data);
+				setTableData(data);
 				setPagination(pagination);
 			}
 		}
-		getUsers();
+		getData();
 	}, [currentPage]);
 
 	return (
 		<div className="flex flex-col h-full rounded-lg overflow-hidden">
 			<div className="flex">
-				{availableModes.map((m) => {
+				{Object.values(availableModes).map((m) => {
 					return (
 						<TabButton key={m} mode={mode} setMode={setMode}>
 							{m}
@@ -47,8 +59,8 @@ export default function AdminCanvasPage() {
 				})}
 			</div>
 
-			<div className="bg-[#140D2E] h-full">
-				<AdminTable data={users} currentPage={currentPage} setCurrentPage={setCurrentPage} pagination={pagination} />
+			<div className="bg-[#140D2E] h-full overflow-y-auto">
+				<AdminTable data={tableData} currentPage={currentPage} setCurrentPage={setCurrentPage} pagination={pagination} />
 			</div>
 		</div>
 	);

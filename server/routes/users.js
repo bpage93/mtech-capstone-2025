@@ -19,7 +19,6 @@ router.get("/view", async (req, res) => {
 			Authorization: `Bearer ${token}`,
 		},
 	});
-	const isAdminData = await isAdminResponse.json();
 	if (!isAdminResponse.ok) {
 		return res.status(403).json({ error: "access denied" });
 	}
@@ -44,8 +43,11 @@ router.get("/view", async (req, res) => {
                 address.street,
                 address.city,
                 address.state,
-                address.zip
-            FROM "user" usr JOIN address ON usr.id = address.user_id
+                address.zip,
+                enrollment.course_id
+            FROM "user" usr
+            JOIN address ON usr.id = address.user_id
+            LEFT JOIN enrollment on usr.id = enrollment.user_id
             ORDER BY usr.lastname
             LIMIT $1
             OFFSET $2;
@@ -53,7 +55,7 @@ router.get("/view", async (req, res) => {
 			[usersPerPage, offset]
 		);
 		res.status(200).json({
-			users: userResults.rows,
+			data: userResults.rows,
 			pagination: {
 				current_page: page,
 				total_pages: maxPage,
