@@ -2,6 +2,8 @@ import Loading from "@/app/canvas/loading";
 import { useState, useEffect } from "react";
 
 export default function AdminTable({ data, currentPage, setCurrentPage, pagination }) {
+	const [selectedData, setSelectedData] = useState("0 0");
+
 	return !data || data?.length === 0 ? (
 		<Loading />
 	) : (
@@ -23,12 +25,19 @@ export default function AdminTable({ data, currentPage, setCurrentPage, paginati
 			{/* Body Data */}
 			<div className="flex overflow-x-auto w-full">
 				{data?.length > 0 &&
-					data.map((user, index) => (
-						<div key={index} className="flex flex-col font-medium text-lg w-full min-w-50">
-							<h3 className="bg-[#18153a] flex items-center justify-center px-3 h-13 sticky">{index + 1}</h3>
-							{Object.values(user).map((data, index) => (
-								<div key={index} className="flex items-center justify-center px-3 h-13 border-l border-white/10">
-									<span className="truncate w-full text-center">{data}</span>
+					data.map((user, i) => (
+						<div key={i} className="flex flex-col font-medium text-lg w-full min-w-50">
+							<h3 className="bg-[#18153a] flex items-center justify-center px-4 h-13 sticky">{i + 1}</h3>
+							{Object.values(user).map((data, j) => (
+								<div key={j} id={`${i} ${j}`} className="flex items-center justify-center px-4 h-13 border-l border-white/10">
+									<div className="flex items-center min-w-0 w-full gap-x-2" onClick={() => setSelectedData(`${i} ${j}`)}>
+										<span className="truncate flex-1 text-center">{data}</span>
+										{selectedData === `${i} ${j}` && (
+											<button type="button" className="flex-shrink-0 w-7 h-7 p-1 hover:cursor-pointer rounded-lg bg-indigo-700" aria-label="Edit this data">
+												<img src="/svgs/edit.svg" alt="Edit" className="w-full h-full" />
+											</button>
+										)}
+									</div>
 								</div>
 							))}
 						</div>
