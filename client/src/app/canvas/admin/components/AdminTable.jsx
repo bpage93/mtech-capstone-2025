@@ -1,21 +1,30 @@
 import Loading from "@/app/canvas/loading";
-import Textarea from "daisyui/components/textarea";
 import { useState, useEffect } from "react";
 
-export default function AdminTable({ data, currentPage, setCurrentPage, pagination }) {
+export default function AdminTable({ data, setData, currentPage, setCurrentPage, pagination }) {
 	const [selectedData, setSelectedData] = useState({ index: 0, key: "id" });
 	const [editing, setEditing] = useState(false);
 
-	useEffect(() => {
-		if (!data?.length) return;
-		const key = Object.keys(data[0])[0];
+    useEffect(() => {
+        if (!data?.length) return;
+        const key = Object.keys(data[0])[0];
+        console.log(key)
 		setSelectedData({ index: 0, key });
-	}, [data]);
+    }, [data]);
+    
+    function handleSaveChanges (newValue) {
+        setEditing(false);
+
+        const updated = [...data];
+        updated[selectedData.index][selectedData.key] = newValue;
+        
+        setData(updated)
+    }
 
 	return !data || data?.length === 0 ? (
 		<Loading />
 	) : editing ? (
-		<EditTableData data={data} selectedData={selectedData} setEditing={setEditing} />
+		<EditTableData data={data} selectedData={selectedData} setEditing={setEditing} handleSaveChanges={handleSaveChanges} />
 	) : (
 		<div className="flex shadow-md bg-[#160f33] text-violet-100 min-h-full">
 			{/* Header Data */}
@@ -45,7 +54,7 @@ export default function AdminTable({ data, currentPage, setCurrentPage, paginati
 									return (
 										<div key={j} className={`${dataSelected ? "bg-indigo-900" : ""} flex items-center justify-center px-4 h-13 hover:bg-indigo-900`} onClick={() => setSelectedData({ index, key })}>
 											<div className="flex items-center min-w-0 w-full gap-x-2">
-												<span className="truncate flex-1 text-center">{data}</span>
+												<span className="truncate flex-1 text-center">{data.value}</span>
 												{dataSelected && (
 													<button type="button" className="flex-shrink-0 w-7 h-7 p-1 hover:cursor-pointer rounded-lg bg-indigo-700" aria-label="Edit this data" onClick={() => setEditing(true)}>
 														<img src="/svgs/edit.svg" alt="Edit" className="w-full h-full" />
@@ -63,7 +72,7 @@ export default function AdminTable({ data, currentPage, setCurrentPage, paginati
 	);
 }
 
-function EditTableData({ data, selectedData, setEditing }) {
+function EditTableData({ data, selectedData, setEditing, handleSaveChanges }) {
 	const [inputValue, setInputValue] = useState(data[selectedData.index][selectedData.key]);
 	console.log(selectedData);
 	return (
@@ -74,8 +83,10 @@ function EditTableData({ data, selectedData, setEditing }) {
 			<div className="flex flex-col gap-y-2 w-1/2">
 				<textarea value={inputValue} placeholder="Your changes here..." className="w-full min-h-20 h-60 max-h-100 bg-indigo-950 px-3 py-2 rounded-lg shadow-md border border-indigo-900 focus:outline-0" onChange={(e) => setInputValue(e.target.value)} />
 				<div className="flex gap-2">
-					<button className="bg-sky-700 border-2 border-sky-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md">Save Changes</button>
-					<button className="bg-rose-700 border-2 border-rose-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md">Cancel</button>
+					<button className="bg-sky-700 border-2 border-sky-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md" onClick={() => handleSaveChanges(inputValue)}>Save Changes</button>
+					<button className="bg-rose-700 border-2 border-rose-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md" onClick={() => setEditing(false)}>
+						Cancel
+					</button>
 				</div>
 			</div>
 		</div>

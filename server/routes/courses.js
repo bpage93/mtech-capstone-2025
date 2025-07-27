@@ -46,7 +46,8 @@ router.get("/view", async (req, res) => {
 		);
 
 		res.status(200).json({
-			data: coursesResult.rows,
+            data: coursesResult.rows,
+            table: "course",
 			pagination: {
 				current_page: page,
 				total_pages: maxPage,

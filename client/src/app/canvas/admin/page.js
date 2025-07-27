@@ -41,6 +41,7 @@ export default function AdminCanvasPage() {
 			});
 			if (dataRequest.ok) {
 				const { data, pagination } = await dataRequest.json();
+				console.log(data);
 				setTableData(data);
 				setPagination(pagination);
 			} else if (dataRequest.status === 403 || dataRequest.status === 401) {
@@ -63,7 +64,7 @@ export default function AdminCanvasPage() {
 			</div>
 
 			<div className="bg-[#140D2E] h-full overflow-y-auto">
-				<AdminTable data={tableData} currentPage={currentPage} setCurrentPage={setCurrentPage} pagination={pagination} />
+				<AdminTable data={tableData} setData={setTableData} currentPage={currentPage} setCurrentPage={setCurrentPage} pagination={pagination} />
 			</div>
 		</div>
 	);

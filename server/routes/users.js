@@ -33,29 +33,40 @@ router.get("/view", async (req, res) => {
 		const userResults = await query(
 			`
             SELECT
-                usr.id,
-                usr.role,
-                usr.email,
-                usr.firstname,
-                usr.lastname,
-                usr.telephone,
-                usr.username,
-                address.street,
-                address.city,
-                address.state,
-                address.zip,
-                enrollment.course_id
+                usr.id AS user_id,
+                usr.role AS user_role,
+                usr.email AS user_email,
+                usr.firstname AS user_firstname,
+                usr.lastname AS user_lastname,
+                usr.telephone AS user_telephone,
+                usr.username AS user_username,
+                address.street AS address_street,
+                address.city AS address_city,
+                address.state AS address_state,
+                address.zip AS address_zip,
+                enrollment.course_id AS enrollment_course_id
             FROM "user" usr
             JOIN address ON usr.id = address.user_id
-            LEFT JOIN enrollment on usr.id = enrollment.user_id
+            LEFT JOIN enrollment ON usr.id = enrollment.user_id
             ORDER BY usr.lastname
             LIMIT $1
             OFFSET $2;
         `,
 			[usersPerPage, offset]
 		);
+		const modifiedData = userResults.rows.map((row) => {
+			const wrapped = {};
+			for (const [key, value] of Object.entries(row)) {
+				const [table, field] = key.split("_", 2);
+				wrapped[field] = {
+					value,
+					table,
+				};
+			}
+			return wrapped;
+		});
 		res.status(200).json({
-			data: userResults.rows,
+			data: modifiedData,
 			pagination: {
 				current_page: page,
 				total_pages: maxPage,
