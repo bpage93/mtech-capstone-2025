@@ -24,7 +24,7 @@ export default function AdminTable({ data, currentPage, setCurrentPage, paginati
 			<div className="flex overflow-x-auto w-full">
 				{data?.length > 0 &&
 					data.map((user, index) => (
-						<div key={index} className="flex flex-col font-medium text-lg flex-1 min-w-50">
+						<div key={index} className="flex flex-col font-medium text-lg w-full min-w-50">
 							<h3 className="bg-[#18153a] flex items-center justify-center px-3 h-13 sticky">{index + 1}</h3>
 							{Object.values(user).map((data, index) => (
 								<div key={index} className="flex items-center justify-center px-3 h-13 border-l border-white/10">
