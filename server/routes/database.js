@@ -17,24 +17,29 @@ router.patch("/update", async (req, res) => {
 		return res.status(403).json({ error: "access denied" });
 	}
 
-	let { table, field, value } = req.body;
+	let { id, table, field, value } = req.body;
 
 	if (field === "id") return res.status(403).json({ error: "access denied" });
 	if (table === "user") table = '"user"';
 
 	try {
-		const updateResult = query(
+		const updateResult = await query(
 			`
-            UPDATE $1
-            SET email = $2
-            WHERE id = $3
+            UPDATE ${table}
+            SET ${field} = $1
+            WHERE id = $2
+            RETURNING *;
         `,
-			[table, field, value]
+			[value, id]
 		);
 		res.status(200).json(updateResult);
 	} catch (error) {
 		res.status(500).json({ error: error.message });
 	}
 });
+
+router.get('/health', (req, res) => {
+    res.send("Able to request!");
+})
 
 module.exports = router;

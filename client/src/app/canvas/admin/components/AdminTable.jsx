@@ -16,9 +16,12 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 		const updatedData = [...data];
 		updatedData[selectedData.index][selectedData.key].value = newValue;
 
+        const id = updatedData[selectedData.index].id.value;
 		const table = updatedData[selectedData.index][selectedData.key].table;
 		const field = selectedData.key;
-		const value = newValue;
+        const value = newValue;
+        
+        await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/database/health`);
 
 		const token = localStorage.getItem("jwtToken");
 		const updateResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/database/update`, {
@@ -27,7 +30,7 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 				Authorization: `Bearer ${token}`,
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify({ table, field, value }),
+			body: JSON.stringify({ id, table, field, value }),
 		});
 
 		if (!updateResponse.ok) {
