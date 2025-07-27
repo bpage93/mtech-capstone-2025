@@ -2,8 +2,14 @@ import Loading from "@/app/canvas/loading";
 import { useState, useEffect } from "react";
 
 export default function AdminTable({ data, currentPage, setCurrentPage, pagination }) {
-	const [selectedData, setSelectedData] = useState([0, "id"]);
-	const [editing, setEditing] = useState(false);
+	const [selectedData, setSelectedData] = useState({index: 0, key: "id"});
+    const [editing, setEditing] = useState(false);
+    
+    useEffect(() => {
+        if (!data?.length) return;
+        const key = Object.keys(data[0])[0]
+        setSelectedData({index: 0, key})
+    }, [data]);
 
 	return !data || data?.length === 0 ? (
 		<Loading />
@@ -30,14 +36,14 @@ export default function AdminTable({ data, currentPage, setCurrentPage, paginati
 				<div className="flex overflow-x-auto w-full">
 					{data?.length > 0 &&
 						data.map((row, index) => {
-							const rowSelected = selectedData[0] === index;
+							const rowSelected = selectedData.index === index;
 							return (
 								<div key={index} className="flex flex-col font-medium text-lg w-full min-w-40">
 									<h3 className={`${rowSelected ? "bg-indigo-800" : "bg-[#18153a]"} flex items-center justify-center px-4 h-13 sticky`}>{index + 1}</h3>
 									{Object.entries(row).map(([key, data], j) => {
-										const dataSelected = selectedData[0] === index && selectedData[1] === key;
+										const dataSelected = selectedData.index === index && selectedData.key === key;
 										return (
-											<div key={j} className={`${dataSelected ? "bg-indigo-900" : ""} flex items-center justify-center px-4 h-13 border-l border-white/10 hover:bg-indigo-900`} onClick={() => setSelectedData([index, key])}>
+											<div key={j} className={`${dataSelected ? "bg-indigo-900" : ""} flex items-center justify-center px-4 h-13 border-l border-white/10 hover:bg-indigo-900`} onClick={() => setSelectedData({index, key})}>
 												<div className="flex items-center min-w-0 w-full gap-x-2">
 													<span className="truncate flex-1 text-center">{data}</span>
 													{dataSelected && (
@@ -62,7 +68,7 @@ function EditTableData ({ data, selectedData, setEditing }) {
     console.log(selectedData)
 	return (
 		<div className="bg-[#160f33] relative top-0 left-0 w-full h-full z-10">
-			<button className="absolute left-0 top-0 m-5 p-2 w-15 h-15 hover:cursor-pointer" onClick={() => setEditing(false)}>
+			<button className="absolute left-0 top-0 m-5 p-1 w-11 h-11 hover:cursor-pointer bg-indigo-900 rounded-full shadow-md/40" onClick={() => setEditing(false)}>
 				<img src="/svgs/arrow_back.svg" alt="" className="w-full h-full" />
 			</button>
 		</div>
