@@ -8,57 +8,60 @@ export default function AdminTable({ data, currentPage, setCurrentPage, paginati
 	return !data || data?.length === 0 ? (
 		<Loading />
 	) : (
-		<div className="relative flex shadow-md bg-[#160f33] text-violet-100">
-			{/* Header Data */}
-			{editing && <EditTableData data={data} selectedData={selectedData} />}
-			<div className="bg-[#18153a] flex flex-col font-bold text-xl max-w-60 sticky">
-				{/* Pagination */}
-				<div className="flex items-center justify-center px-5 h-13">
-					<Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} pagination={pagination} />
+		editing ? (
+			<EditTableData data={data} selectedData={selectedData} setEditing={setEditing} />
+		) : (
+			<div className="flex shadow-md bg-[#160f33] text-violet-100">
+				{/* Header Data */}
+				<div className="bg-[#18153a] flex flex-col font-bold text-xl max-w-60 sticky">
+					{/* Pagination */}
+					<div className="flex items-center justify-center px-5 h-13">
+						<Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} pagination={pagination} />
+					</div>
+					{data?.length > 0 &&
+						Object.keys(data[0]).map((key, index) => (
+							<h3 key={index} className="flex items-center justify-center px-5 h-13 text-center truncate">
+								{key}
+							</h3>
+						))}
 				</div>
-				{data?.length > 0 &&
-					Object.keys(data[0]).map((key, index) => (
-						<h3 key={index} className="flex items-center justify-center px-5 h-13 text-center truncate">
-							{key}
-						</h3>
-					))}
-			</div>
 
-			{/* Body Data */}
-			<div className="flex overflow-x-auto w-full">
-				{data?.length > 0 &&
-					data.map((row, index) => {
-						const rowSelected = selectedData[0] === index;
-						return (
-							<div key={index} className="flex flex-col font-medium text-lg w-full min-w-40">
-								<h3 className={`${rowSelected ? "bg-indigo-800" : "bg-[#18153a]"} flex items-center justify-center px-4 h-13 sticky`}>{index + 1}</h3>
-								{Object.entries(row).map(([key, data], j) => {
-									const dataSelected = selectedData[0] === index && selectedData[1] === key;
-									return (
-										<div key={j} className={`${dataSelected ? "bg-indigo-900" : ""} flex items-center justify-center px-4 h-13 border-l border-white/10 hover:bg-indigo-900`} onClick={() => setSelectedData([index, key])}>
-											<div className="flex items-center min-w-0 w-full gap-x-2">
-												<span className="truncate flex-1 text-center">{data}</span>
-												{dataSelected && (
-													<button type="button" className="flex-shrink-0 w-7 h-7 p-1 hover:cursor-pointer rounded-lg bg-indigo-700" aria-label="Edit this data" onClick={() => setEditing(true)}>
-														<img src="/svgs/edit.svg" alt="Edit" className="w-full h-full" />
-													</button>
-												)}
+				{/* Body Data */}
+				<div className="flex overflow-x-auto w-full">
+					{data?.length > 0 &&
+						data.map((row, index) => {
+							const rowSelected = selectedData[0] === index;
+							return (
+								<div key={index} className="flex flex-col font-medium text-lg w-full min-w-40">
+									<h3 className={`${rowSelected ? "bg-indigo-800" : "bg-[#18153a]"} flex items-center justify-center px-4 h-13 sticky`}>{index + 1}</h3>
+									{Object.entries(row).map(([key, data], j) => {
+										const dataSelected = selectedData[0] === index && selectedData[1] === key;
+										return (
+											<div key={j} className={`${dataSelected ? "bg-indigo-900" : ""} flex items-center justify-center px-4 h-13 border-l border-white/10 hover:bg-indigo-900`} onClick={() => setSelectedData([index, key])}>
+												<div className="flex items-center min-w-0 w-full gap-x-2">
+													<span className="truncate flex-1 text-center">{data}</span>
+													{dataSelected && (
+														<button type="button" className="flex-shrink-0 w-7 h-7 p-1 hover:cursor-pointer rounded-lg bg-indigo-700" aria-label="Edit this data" onClick={() => setEditing(true)}>
+															<img src="/svgs/edit.svg" alt="Edit" className="w-full h-full" />
+														</button>
+													)}
+												</div>
 											</div>
-										</div>
-									);
-								})}
-							</div>
-						);
-					})}
+										);
+									})}
+								</div>
+							);
+						})}
+				</div>
 			</div>
-		</div>
+		)
 	);
 }
 
-function EditTableData({ data, selectedData }) {
+function EditTableData({ data, selectedData, setEditing }) {
 	return (
-		<div className="bg-[#160f33] absolute top-0 left-0 w-full h-full z-10">
-			<button className="absolute left-0 top-0 m-10 w-10 h-10">
+		<div className="bg-[#160f33] relative top-0 left-0 w-full h-full z-10">
+			<button className="absolute left-0 top-0 m-5 p-2 w-15 h-15 hover:cursor-pointer" onClick={() => setEditing(false)}>
 				<img src="/svgs/arrow_back.svg" alt="" className="w-full h-full" />
 			</button>
 		</div>
