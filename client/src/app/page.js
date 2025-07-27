@@ -31,7 +31,7 @@ export default function Home() {
 				router.push(`/canvas/${returnedUserData.role}`);
 			}
 		})();
-	}, []);
+	}, [router, validateAccess]);
 
 	useEffect(() => {
 		document.getElementById("field-warning").classList.add("hidden");
