@@ -16,7 +16,7 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 		setEditing(false);
 
 		const updated = [...data];
-		updated[selectedData.index][selectedData.key] = newValue;
+		updated[selectedData.index][selectedData.key].value = newValue;
 
 		setData(updated);
 	}
