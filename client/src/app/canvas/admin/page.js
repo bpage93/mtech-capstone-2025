@@ -8,8 +8,8 @@ export default function AdminCanvasPage() {
 	const { updateTitle } = useTitleContext();
 	const availableModes = {
 		users: "Users",
-		courses: "Courses"
-	}
+		courses: "Courses",
+	};
 	const [mode, setMode] = useState(availableModes.users);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [tableData, setTableData] = useState(null);
@@ -17,11 +17,11 @@ export default function AdminCanvasPage() {
 
 	useEffect(() => {
 		updateTitle("Admin Dashboard");
-	}, []);
+	}, [updateTitle]);
 
 	useEffect(() => {
-		setCurrentPage(0)
-	}, [mode])
+		setCurrentPage(0);
+	}, [mode]);
 
 	useEffect(() => {
 		setTableData(null);
@@ -30,8 +30,7 @@ export default function AdminCanvasPage() {
 			return;
 		}
 		const token = localStorage.getItem("jwtToken");
-		async function getData () {
-			
+		async function getData() {
 			const dataRequest = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/${mode === availableModes.users ? "users" : "courses"}/view?page=${currentPage}`, {
 				headers: {
 					Authorization: `Bearer ${token}`,
@@ -39,13 +38,12 @@ export default function AdminCanvasPage() {
 			});
 			if (dataRequest.ok) {
 				const { data, pagination } = await dataRequest.json();
-				console.log(data);
 				setTableData(data);
 				setPagination(pagination);
 			}
 		}
 		getData();
-	}, [currentPage]);
+	}, [currentPage, availableModes.users, mode]);
 
 	return (
 		<div className="flex flex-col h-full rounded-lg overflow-hidden">
