@@ -29,14 +29,14 @@ router.get("/view", async (req, res) => {
 		const coursesResult = await query(
 			`
             SELECT
-                course.id,
-                course.title,
-                course.description,
-                course.schedule,
-                course.classroom_number,
-                course.maximum_capacity,
-                course.credit_hours,
-                course.tuition_cost
+                course.id AS course_id,
+                course.title AS course_title,
+                course.description AS course_description,
+                course.schedule AS course_schedule,
+                course.classroom_number AS course_classroom_number,
+                course.maximum_capacity AS course_maximum_capacity,
+                course.credit_hours AS course_credit_hours,
+                course.tuition_cost AS course_tuition_cost
             FROM course
             ORDER BY course.id
             LIMIT $1

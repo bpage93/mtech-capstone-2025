@@ -2026,3 +2026,27 @@
 {"level":"http","message":"::1 - - [27/Jul/2025:20:27:46 +0000] \"GET /api/users/view?page=2 HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0\""}
 {"level":"http","message":"::1 - - [27/Jul/2025:20:27:47 +0000] \"GET /api/auth/admin HTTP/1.1\" 200 30 \"-\" \"node\""}
 {"level":"http","message":"::1 - - [27/Jul/2025:20:27:47 +0000] \"GET /api/users/view?page=1 HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:34:11 +0000] \"GET /api/auth/admin HTTP/1.1\" 200 30 \"-\" \"node\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:34:11 +0000] \"GET /api/courses/view?page=1 HTTP/1.1\" 200 1251 \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:34:12 +0000] \"GET /api/auth/admin HTTP/1.1\" 200 30 \"-\" \"node\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:34:12 +0000] \"GET /api/courses/view?page=1 HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:34:14 +0000] \"GET /api/auth/admin HTTP/1.1\" 200 30 \"-\" \"node\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:34:14 +0000] \"GET /api/users/view?page=1 HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:34:14 +0000] \"GET /api/auth/admin HTTP/1.1\" 200 30 \"-\" \"node\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:34:14 +0000] \"GET /api/users/view?page=1 HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:34:41 +0000] \"GET /api/auth/admin HTTP/1.1\" 200 30 \"-\" \"node\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:34:41 +0000] \"GET /api/courses/view?page=1 HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:34:41 +0000] \"GET /api/auth/admin HTTP/1.1\" 200 30 \"-\" \"node\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:34:41 +0000] \"GET /api/courses/view?page=1 HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:34:42 +0000] \"GET /api/auth/admin HTTP/1.1\" 200 30 \"-\" \"node\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:34:42 +0000] \"GET /api/users/view?page=1 HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:34:42 +0000] \"GET /api/auth/admin HTTP/1.1\" 200 30 \"-\" \"node\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:34:42 +0000] \"GET /api/users/view?page=1 HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:34:51 +0000] \"GET /api/auth/admin HTTP/1.1\" 200 30 \"-\" \"node\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:34:51 +0000] \"GET /api/courses/view?page=1 HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:34:51 +0000] \"GET /api/auth/admin HTTP/1.1\" 200 30 \"-\" \"node\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:34:51 +0000] \"GET /api/courses/view?page=1 HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:35:51 +0000] \"GET /api/auth/admin HTTP/1.1\" 200 30 \"-\" \"node\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:35:51 +0000] \"GET /api/courses/view?page=2 HTTP/1.1\" 200 1252 \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:35:56 +0000] \"GET /api/auth/admin HTTP/1.1\" 200 30 \"-\" \"node\""}
+{"level":"http","message":"::1 - - [27/Jul/2025:20:35:56 +0000] \"GET /api/courses/view?page=1 HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36 Edg/138.0.0.0\""}
