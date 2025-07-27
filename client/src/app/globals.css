@@ -38,33 +38,33 @@
 }
 
 @keyframes spinbananas {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
 }
 
 .banana-spinner {
-    animation: spinbananas 2s linear infinite;
-    font-size: 2.5rem;
-    filter: drop-shadow(0 0 10px rgba(255, 255, 0, 0.7));
+	animation: spinbananas 2s linear infinite;
+	font-size: 2.5rem;
+	filter: drop-shadow(0 0 10px rgba(255, 255, 0, 0.7));
 }
 
 @keyframes confettiPop {
-    0% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(-100px) scale(1.5);
-    }
+	0% {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+	100% {
+		opacity: 0;
+		transform: translateY(-100px) scale(1.5);
+	}
 }
 
 .confetti {
-    animation: confettiPop 1s ease-out forwards;
+	animation: confettiPop 1s ease-out forwards;
 }
 
 @keyframes bananaGlow {
@@ -81,4 +81,16 @@
 
 .banana-glow {
     animation: bananaGlow 1.5s ease-in-out infinite;
+}
+
+input[type="password"]::-webkit-reveal-password {
+	display: none !important;
+}
+
+input[type="password"]::-moz-reveal-password {
+	display: none !important;
+}
+
+input[type="password"]::-ms-reveal {
+	display: none !important;
 }

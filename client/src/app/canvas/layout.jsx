@@ -22,21 +22,23 @@ function MainLayout({ children }) {
 	const { title } = useTitleContext();
 
 	return (
-		<div className="w-full min-h-dvh flex p-4 text-white bg-gradient-to-r from-[#450082] to-[#12001e] animate-circular-gradient gap-4 relative">
-			{/* Sidebar */}
+		<div className="w-full max-w-screen max-h-screen min-h-dvh flex p-3 bg-[#1B1340] gap-3 relative">
 			<Sidebar />
 
-			{/* Main Content Area */}
-			<div className="flex flex-col gap-4 w-full max-h-screen  pr-2">
-				<div className="card bg-base-300 p-4 rounded-box shadow-md">
-					<TitleDisplay title={title} />
+			<div className="flex flex-col gap-4 w-full overflow-auto">
+				<div className="flex flex-col gap-y-3 rounded-md h-full">
+					<div className="bg-[#120C2A] rounded-xl px-7 py-5 h-full flex flex-col gap-y-8">
+						<div className="">
+							<TitleDisplay title={title} />
+						</div>
+						{children}
+					</div>
 				</div>
-				<div className="card bg-base-100 p-6 rounded-box shadow grow overflow-y-auto overflow-x-auto">{children}</div>
 			</div>
 		</div>
 	);
 }
 
 function TitleDisplay({ title }) {
-	return <h2 className="flex items-center text-2xl font-bold p-3 bg-black/20 rounded-2xl">{title}</h2>;
+	return <h2 className="flex items-center text-2xl font-bold">{title}</h2>;
 }
