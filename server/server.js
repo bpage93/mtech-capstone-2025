@@ -7,9 +7,6 @@ const session = require("express-session");
 const morgan = require("morgan");
 const winston = require("winston");
 const { Strategy: GoogleStrategy } = require("passport-google-oauth20");
-const usersRouter = require("./routes/users")
-
-const authRouter = require("./routes/auth");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -30,51 +27,14 @@ app.use(
 	})
 );
 
-// Sessions (required for Passport)
-app.use(
-	session({
-		secret: "keyboard cat",
-		resave: false,
-		saveUninitialized: false,
-	})
-);
-
-// Passport initialization
-app.use(passport.initialize());
-app.use(passport.session());
-
-// Passport Google OAuth Strategy
-passport.use(
-	new GoogleStrategy(
-		{
-			clientID: process.env.GOOGLE_CLIENT_ID,
-			clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-			callbackURL: "/api/auth/google/callback",
-		},
-		async (accessToken, refreshToken, profile, done) => {
-			const user = {
-				googleId: profile.id,
-				email: profile.emails[0].value,
-				name: profile.displayName,
-			};
-
-			// You would save or lookup the user in your DB here
-			return done(null, user);
-		}
-	)
-);
-
-// Serialize user to session (if using sessions)
-passport.serializeUser((user, done) => {
-	done(null, user);
-});
-passport.deserializeUser((obj, done) => {
-	done(null, obj);
-});
+const usersRouter = require("./routes/users");
+const coursesRouter = require("./routes/courses");
+const authRouter = require("./routes/auth");
 
 // Routes
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
+app.use("/api/courses", coursesRouter);
 
 // Health check route
 app.get("/api", (req, res) => {
@@ -95,7 +55,6 @@ app.get(
 		res.redirect(`${FRONTEND_URL}/canvas/student`); // or pass token in query string
 	}
 );
-
 
 // Start server
 app.listen(PORT, () => {

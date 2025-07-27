@@ -19,7 +19,6 @@ router.get("/view", async (req, res) => {
 			Authorization: `Bearer ${token}`,
 		},
 	});
-	const isAdminData = await isAdminResponse.json();
 	if (!isAdminResponse.ok) {
 		return res.status(403).json({ error: "access denied" });
 	}
@@ -56,7 +55,7 @@ router.get("/view", async (req, res) => {
 			[usersPerPage, offset]
 		);
 		res.status(200).json({
-			users: userResults.rows,
+			data: userResults.rows,
 			pagination: {
 				current_page: page,
 				total_pages: maxPage,
