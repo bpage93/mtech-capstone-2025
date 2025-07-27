@@ -5,21 +5,21 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 	const [selectedData, setSelectedData] = useState({ index: 0, key: "id" });
 	const [editing, setEditing] = useState(false);
 
-    useEffect(() => {
-        if (!data?.length) return;
-        const key = Object.keys(data[0])[0];
-        console.log(key)
+	useEffect(() => {
+		if (!data?.length) return;
+		const key = Object.keys(data[0])[0];
+		console.log(key);
 		setSelectedData({ index: 0, key });
-    }, [data]);
-    
-    function handleSaveChanges (newValue) {
-        setEditing(false);
+	}, [data]);
 
-        const updated = [...data];
-        updated[selectedData.index][selectedData.key] = newValue;
-        
-        setData(updated)
-    }
+	function handleSaveChanges(newValue) {
+		setEditing(false);
+
+		const updated = [...data];
+		updated[selectedData.index][selectedData.key] = newValue;
+
+		setData(updated);
+	}
 
 	return !data || data?.length === 0 ? (
 		<Loading />
@@ -73,7 +73,7 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 }
 
 function EditTableData({ data, selectedData, setEditing, handleSaveChanges }) {
-	const [inputValue, setInputValue] = useState(data[selectedData.index][selectedData.key]);
+	const [inputValue, setInputValue] = useState(data[selectedData.index][selectedData.key].value);
 	console.log(selectedData);
 	return (
 		<div className="bg-[#160f33] relative w-full h-full flex justify-center items-center">
@@ -83,7 +83,9 @@ function EditTableData({ data, selectedData, setEditing, handleSaveChanges }) {
 			<div className="flex flex-col gap-y-2 w-1/2">
 				<textarea value={inputValue} placeholder="Your changes here..." className="w-full min-h-20 h-60 max-h-100 bg-indigo-950 px-3 py-2 rounded-lg shadow-md border border-indigo-900 focus:outline-0" onChange={(e) => setInputValue(e.target.value)} />
 				<div className="flex gap-2">
-					<button className="bg-sky-700 border-2 border-sky-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md" onClick={() => handleSaveChanges(inputValue)}>Save Changes</button>
+					<button className="bg-sky-700 border-2 border-sky-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md" onClick={() => handleSaveChanges(inputValue)}>
+						Save Changes
+					</button>
 					<button className="bg-rose-700 border-2 border-rose-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md" onClick={() => setEditing(false)}>
 						Cancel
 					</button>
