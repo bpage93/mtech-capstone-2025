@@ -21,6 +21,7 @@ export default function AdminCanvasPage() {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [tableData, setTableData] = useState(null);
 	const [pagination, setPagination] = useState({});
+	const oneToManyTables = ["enrollment"];
 
 	const router = useRouter();
 
@@ -70,7 +71,7 @@ export default function AdminCanvasPage() {
 			</div>
 
 			<div className="bg-[#140D2E] h-full overflow-y-auto">
-				<AdminTable data={tableData} setData={setTableData} currentPage={currentPage} setCurrentPage={setCurrentPage} pagination={pagination} canCreateRow={canCreateRow} />
+				<AdminTable data={tableData} setData={setTableData} currentPage={currentPage} setCurrentPage={setCurrentPage} pagination={pagination} canCreateRow={canCreateRow} oneToManyTables={oneToManyTables} />
 			</div>
 		</div>
 	);

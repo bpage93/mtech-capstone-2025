@@ -40,10 +40,12 @@ router.get("/view", async (req, res) => {
                 usr.lastname AS user_lastname,
                 usr.telephone AS user_telephone,
                 usr.username AS user_username,
+                address.id AS address_id,
                 address.street AS address_street,
                 address.city AS address_city,
                 address.state AS address_state,
                 address.zip AS address_zip,
+                enrollment.id AS enrollment_id,
                 enrollment.course_id AS enrollment_course_id
             FROM "user" usr
             JOIN address ON usr.id = address.user_id
@@ -53,16 +55,19 @@ router.get("/view", async (req, res) => {
             OFFSET $2;
         `,
 			[usersPerPage, offset]
-		);
-		const modifiedData = userResults.rows.map((row) => {
+        );
+        const modifiedData = userResults.rows.map((row) => {
 			const wrapped = {};
             for (const [key, value] of Object.entries(row)) {
                 const splitKey = key.split("_");
                 const [table, field] = [splitKey[0], splitKey.slice(1).join("_")];
+                const primary_key = row[`${table}_id`];
+                if (field === "id") continue;
 				wrapped[field] = {
 					value,
 					table,
 					creation: false,
+                    primary_key,
 				};
 			}
 			return wrapped;
@@ -75,6 +80,7 @@ router.get("/view", async (req, res) => {
 				value: "",
 				table,
 				creation: true,
+                primary_key: null,
 			};
 		}
 		modifiedData.push(creationColumn);

@@ -41,16 +41,20 @@ router.get("/view", async (req, res) => {
             OFFSET $2;
         `,
 			[coursesPerPage, offset]
-		);
+        );
+        const nonEditableFields = ["id"]
 		const modifiedData = coursesResult.rows.map((row) => {
 			const wrapped = {};
 			for (const [key, value] of Object.entries(row)) {
 				const splitKey = key.split("_");
 				const [table, field] = [splitKey[0], splitKey.slice(1).join("_")];
+				const primary_key = row[`${table}_id`];
+				if (field === "id") continue;
 				wrapped[field] = {
 					value,
 					table,
 					creation: false,
+					primary_key,
 				};
 			}
 			return wrapped;
@@ -60,10 +64,11 @@ router.get("/view", async (req, res) => {
 			const splitKey = key.split("_");
             const [table, field] = [splitKey[0], splitKey.slice(1).join("_")];
             creationColumn[field] = {
-                value: "",
-                table,
-                creation: true,
-            }
+				value: "",
+				table,
+				creation: true,
+				primary_key: null,
+			};
         }
         modifiedData.push(creationColumn);
 		res.status(200).json({

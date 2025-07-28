@@ -1,7 +1,7 @@
 import Loading from "@/app/canvas/loading";
 import { useState, useEffect } from "react";
 
-export default function AdminTable({ data, setData, currentPage, setCurrentPage, pagination, canCreateRow }) {
+export default function AdminTable({ data, setData, currentPage, setCurrentPage, pagination, canCreateRow, oneToManyTables }) {
 	const [selectedData, setSelectedData] = useState({ index: 0, key: "id" });
 	const [editing, setEditing] = useState(false);
 	const [editButtonsDisabled, setEditButtonsDisabled] = useState(false);
@@ -17,16 +17,17 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 		if (!newValue) {
 			setShowWarning(true);
 			setWarning("Value cannot be empty");
-            setEditButtonsDisabled(false);
+			setEditButtonsDisabled(false);
 			updatedData[selectedData.index][selectedData.key].value = oldValue;
 			return;
 		}
 		if (newValue === oldValue) {
-			setEditButtonsDisabled(false);
+            setEditButtonsDisabled(false);
+            setEditing(false);
 			return;
 		}
 
-		const id = updatedData[selectedData.index].id.value;
+		const primaryKey = updatedData[selectedData.index][selectedData.key].primary_key;
 		const table = updatedData[selectedData.index][selectedData.key].table;
 		const field = selectedData.key;
 		const value = newValue;
@@ -38,7 +39,7 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 				Authorization: `Bearer ${token}`,
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify({ id, table, field, value }),
+			body: JSON.stringify({ primaryKey, table, field, value }),
 		});
 
 		if (updateResponse.status === 400) {
@@ -65,10 +66,10 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 		setEditing(false);
 	}
 
-    useEffect(() => {
-        if (editing) return;
-        setShowWarning(false);
-        setEditButtonsDisabled(false);
+	useEffect(() => {
+		if (editing) return;
+		setShowWarning(false);
+		setEditButtonsDisabled(false);
 	}, [editing]);
 
 	return !data || data?.length === 0 ? (
@@ -84,17 +85,20 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 					<Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} pagination={pagination} />
 				</div>
 				{data?.length > 0 &&
-					Object.keys(data[0]).map((key, index) => (
-						<h3 key={index} className="flex items-center justify-center px-5 h-13 text-center truncate">
-							{key}
-						</h3>
-					))}
+					Object.keys(data[0]).map((key, index) => {
+						return (
+							<h3 key={index} className="flex items-center justify-center px-5 h-13 text-center truncate">
+								{key}
+							</h3>
+						);
+					})}
 			</div>
 
 			{/* Body Data */}
 			<div className="flex overflow-x-auto w-full">
 				{data?.length > 0 &&
 					data.map((row, index) => {
+						const isCreationRow = data[index][Object.keys(data[index])[0]].creation;
 						const rowSelected = selectedData.index === index;
 						return (
 							<div key={index} className="flex flex-col font-medium text-lg w-full min-w-40 border-l border-white/10">
@@ -103,12 +107,28 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 									const dataSelected = selectedData.index === index && selectedData.key === key;
 									return (
 										<div key={j} className={`${dataSelected ? "bg-indigo-900" : ""} flex items-center justify-center px-4 h-13 hover:bg-indigo-900`} onClick={() => setSelectedData({ index, key })}>
-											<div className="flex items-center min-w-0 w-full gap-x-2">
-												<span className="truncate flex-1 text-center">{data.value}</span>
+											<div className="flex justify-center items-center min-w-0 w-full gap-x-2">
+												{data.value && <span className="truncate flex-1 text-center">{data.value}</span>}
 												{dataSelected && (
-													<button type="button" className="flex-shrink-0 w-7 h-7 p-1 hover:cursor-pointer rounded-lg bg-indigo-700" aria-label="Edit this data" onClick={() => setEditing(true)}>
-														<img src="/svgs/edit.svg" alt="Edit" className="w-full h-full" />
-													</button>
+													<div className="flex gap-x-1">
+														{(data.value || data.creation) && (
+															<button type="button" className="w-7 h-7 p-1 hover:cursor-pointer rounded-lg bg-indigo-700" aria-label="Edit this data" onClick={() => setEditing(true)}>
+																<img src="/svgs/edit.svg" alt="Edit" className="w-full h-full" />
+															</button>
+														)}
+														{oneToManyTables.includes(data.table) && (
+															<>
+																<button type="button" className="w-7 h-7 p-1 hover:cursor-pointer rounded-lg bg-emerald-700" aria-label="Edit this data" onClick={() => setEditing(true)}>
+																	<img src="/svgs/add_2.svg" alt="Edit" className="w-full h-full" />
+																</button>
+																{data.value && (
+																	<button type="button" className="w-7 h-7 p-1 hover:cursor-pointer rounded-lg bg-rose-700" aria-label="Edit this data" onClick={() => setEditing(true)}>
+																		<img src="/svgs/delete.svg" alt="Edit" className="w-full h-full" />
+																	</button>
+																)}
+															</>
+														)}
+													</div>
 												)}
 											</div>
 										</div>
@@ -124,9 +144,9 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 
 function EditTableData({ data, selectedData, setEditing, handleSaveChanges, editButtonsDisabled, setEditButtonsDisabled, showWarning, setShowWarning, warning, setWarning }) {
 	const [inputValue, setInputValue] = useState(data[selectedData.index][selectedData.key].value ? data[selectedData.index][selectedData.key].value : "");
-    if (selectedData.key === "id") {
-        setShowWarning(true);
-        setEditButtonsDisabled(true);
+	if (selectedData.key === "id") {
+		setShowWarning(true);
+		setEditButtonsDisabled(true);
 		setWarning("You cannot change this field!");
 	}
 
