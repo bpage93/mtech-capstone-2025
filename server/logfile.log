@@ -1954,3 +1954,5 @@
 {"level":"http","message":"::1 - - [28/Jul/2025:13:12:23 +0000] \"GET /api/users/view?page=1 HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
 {"level":"http","message":"::1 - - [28/Jul/2025:13:12:23 +0000] \"GET /api/auth/admin HTTP/1.1\" 200 30 \"-\" \"node\""}
 {"level":"http","message":"::1 - - [28/Jul/2025:13:12:24 +0000] \"GET /api/users/view?page=1 HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"http","message":"::1 - - [28/Jul/2025:13:20:29 +0000] \"GET /api/auth/token?route=/canvas/settings HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
+{"level":"http","message":"::1 - - [28/Jul/2025:13:26:01 +0000] \"GET /api/auth/token?route=/canvas/settings HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36\""}
