@@ -4,24 +4,18 @@ import { useState, useEffect } from "react";
 export default function AdminTable({ data, setData, currentPage, setCurrentPage, pagination }) {
 	const [selectedData, setSelectedData] = useState({ index: 0, key: "id" });
 	const [editing, setEditing] = useState(false);
-
-	useEffect(() => {
-		if (!data?.length) return;
-		const key = Object.keys(data[0])[0];
-		console.log(key);
-		setSelectedData({ index: 0, key });
-	}, [data]);
+	const [savingChanges, setSavingChanges] = useState(false);
 
 	async function handleSaveChanges(newValue) {
+		setSavingChanges(true);
 		const updatedData = [...data];
+		const oldValue = data[selectedData.index][selectedData.key].value;
 		updatedData[selectedData.index][selectedData.key].value = newValue;
 
-        const id = updatedData[selectedData.index].id.value;
+		const id = updatedData[selectedData.index].id.value;
 		const table = updatedData[selectedData.index][selectedData.key].table;
 		const field = selectedData.key;
-        const value = newValue;
-        
-        await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/database/health`);
+		const value = newValue;
 
 		const token = localStorage.getItem("jwtToken");
 		const updateResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/database/update`, {
@@ -33,10 +27,12 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 			body: JSON.stringify({ id, table, field, value }),
 		});
 
+		setSavingChanges(false);
+
 		if (!updateResponse.ok) {
+			updatedData[selectedData.index][selectedData.key].value = oldValue;
 			return;
 		}
-
 		setData(updatedData);
 		setEditing(false);
 	}
@@ -44,7 +40,7 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 	return !data || data?.length === 0 ? (
 		<Loading />
 	) : editing ? (
-		<EditTableData data={data} selectedData={selectedData} setEditing={setEditing} handleSaveChanges={handleSaveChanges} />
+		<EditTableData data={data} selectedData={selectedData} setEditing={setEditing} handleSaveChanges={handleSaveChanges} savingChanges={savingChanges} />
 	) : (
 		<div className="flex shadow-md bg-[#160f33] text-violet-100 min-h-full">
 			{/* Header Data */}
@@ -92,27 +88,34 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 	);
 }
 
-function EditTableData({ data, selectedData, setEditing, handleSaveChanges }) {
-	const [inputValue, setInputValue] = useState(data[selectedData.index][selectedData.key].value);
+function EditTableData({ data, selectedData, setEditing, handleSaveChanges, savingChanges }) {
+	const [inputValue, setInputValue] = useState(data[selectedData.index][selectedData.key].value ? data[selectedData.index][selectedData.key].value : "");
 	const showWarning = selectedData.key === "id";
 	console.log(selectedData);
 	return (
-		<div className="bg-[#160f33] relative w-full h-full flex justify-center items-center">
+		<div className="bg-[#160f33] relative w-full h-full flex justify-center items-center text-md">
 			<button className="absolute left-0 top-0 m-5 p-1 w-11 h-11 hover:cursor-pointer bg-indigo-900 rounded-full shadow-md/40" onClick={() => setEditing(false)}>
 				<img src="/svgs/arrow_back.svg" alt="" className="w-full h-full" />
 			</button>
 			<div className="flex flex-col gap-y-2 w-1/2">
-				<textarea value={inputValue} placeholder="Your changes here..." className="w-full min-h-20 h-60 max-h-100 bg-indigo-950 px-3 py-2 rounded-lg shadow-md border border-indigo-900 focus:outline-0" onChange={(e) => setInputValue(e.target.value)} />
+				<textarea
+					value={inputValue}
+					placeholder="Your changes here..."
+					className="text-lg w-full min-h-20 h-60 max-h-100 bg-indigo-950 px-3 py-2 rounded-lg shadow-md border border-indigo-900 focus:outline-0"
+					onChange={(e) => {
+						setInputValue(e.target.value);
+					}}
+				/>
 				{showWarning ? (
 					<span id="warning-field" className="text-yellow-600">
 						You cannot change this field!
 					</span>
 				) : (
 					<div className="flex gap-2">
-						<button className="bg-sky-700 border-2 border-sky-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md" onClick={() => handleSaveChanges(inputValue)}>
+						<button disabled={savingChanges} className={`bg-sky-700 border-2 border-sky-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md disabled:bg-gray-700 disabled:border-gray-700`} onClick={() => handleSaveChanges(inputValue)}>
 							Save Changes
 						</button>
-						<button className="bg-rose-700 border-2 border-rose-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md" onClick={() => setEditing(false)}>
+						<button disabled={savingChanges} className={`bg-rose-700 border-2 border-rose-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md disabled:bg-gray-700 disabled:border-gray-700`} onClick={() => setEditing(false)}>
 							Cancel
 						</button>
 					</div>

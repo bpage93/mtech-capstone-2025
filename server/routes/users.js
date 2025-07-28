@@ -56,8 +56,9 @@ router.get("/view", async (req, res) => {
 		);
 		const modifiedData = userResults.rows.map((row) => {
 			const wrapped = {};
-			for (const [key, value] of Object.entries(row)) {
-				const [table, field] = key.split("_", 2);
+            for (const [key, value] of Object.entries(row)) {
+                const splitKey = key.split("_");
+                const [table, field] = [splitKey[0], splitKey.slice(1).join("_")];
 				wrapped[field] = {
 					value,
 					table,
