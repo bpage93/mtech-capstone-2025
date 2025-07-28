@@ -1,7 +1,7 @@
 import Loading from "@/app/canvas/loading";
 import { useState, useEffect } from "react";
 
-export default function AdminTable({ data, setData, currentPage, setCurrentPage, pagination, canCreateRow, oneToManyTables }) {
+export default function AdminTable({ data, setData, currentPage, setCurrentPage, pagination, oneToManyTables }) {
 	const [selectedData, setSelectedData] = useState({ index: 0, key: "id" });
 	const [editing, setEditing] = useState(false);
 	const [editButtonsDisabled, setEditButtonsDisabled] = useState(false);
@@ -22,8 +22,8 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 			return;
 		}
 		if (newValue === oldValue) {
-            setEditButtonsDisabled(false);
-            setEditing(false);
+			setEditButtonsDisabled(false);
+			setEditing(false);
 			return;
 		}
 
@@ -47,9 +47,22 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 			setShowWarning(true);
 		}
 
-		if (updateResponse.status === 500 && canCreateRow[table] && !oldValue) {
-			const createResponse = null;
+		if (updateResponse.status === 500 && !oldValue) {
 			console.log("this block would handle the creation of this table");
+			if (table === "enrollment") {
+				const user_id = updatedData[selectedData.index].role.primary_key;
+				const creationResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/database/create-enrollment`, {
+					method: "PUT",
+					headers: {
+						Authorization: `Bearer ${token}`,
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({ primaryKey, table, field, value, user_id }),
+				});
+				if (creationResponse.ok) {
+					console.log("success");
+				}
+			}
 			setEditButtonsDisabled(false);
 			return;
 		}

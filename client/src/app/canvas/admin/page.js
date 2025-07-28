@@ -7,12 +7,6 @@ import { useRouter } from "next/navigation";
 
 export default function AdminCanvasPage() {
 	const { updateTitle } = useTitleContext();
-	const canCreateRow = {
-		address: false,
-		course: false,
-		enrollment: true,
-		user: false,
-	}
 	const availableModes = {
 		users: "Users",
 		courses: "Courses",
@@ -71,7 +65,7 @@ export default function AdminCanvasPage() {
 			</div>
 
 			<div className="bg-[#140D2E] h-full overflow-y-auto">
-				<AdminTable data={tableData} setData={setTableData} currentPage={currentPage} setCurrentPage={setCurrentPage} pagination={pagination} canCreateRow={canCreateRow} oneToManyTables={oneToManyTables} />
+				<AdminTable data={tableData} setData={setTableData} currentPage={currentPage} setCurrentPage={setCurrentPage} pagination={pagination} oneToManyTables={oneToManyTables} />
 			</div>
 		</div>
 	);

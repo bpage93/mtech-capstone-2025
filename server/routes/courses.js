@@ -63,6 +63,7 @@ router.get("/view", async (req, res) => {
 		for (const key of Object.keys(coursesResult.rows[0])) {
 			const splitKey = key.split("_");
             const [table, field] = [splitKey[0], splitKey.slice(1).join("_")];
+            if (field === "id") continue;
             creationColumn[field] = {
 				value: "",
 				table,
