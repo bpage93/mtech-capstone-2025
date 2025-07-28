@@ -1,16 +1,30 @@
 import Loading from "@/app/canvas/loading";
 import { useState, useEffect } from "react";
 
-export default function AdminTable({ data, setData, currentPage, setCurrentPage, pagination }) {
+export default function AdminTable({ data, setData, currentPage, setCurrentPage, pagination, canCreateRow }) {
 	const [selectedData, setSelectedData] = useState({ index: 0, key: "id" });
 	const [editing, setEditing] = useState(false);
-	const [savingChanges, setSavingChanges] = useState(false);
+	const [editButtonsDisabled, setEditButtonsDisabled] = useState(false);
+	const [showWarning, setShowWarning] = useState(false);
+	const [warning, setWarning] = useState("");
 
 	async function handleSaveChanges(newValue) {
-		setSavingChanges(true);
+		setEditButtonsDisabled(true);
 		const updatedData = [...data];
 		const oldValue = data[selectedData.index][selectedData.key].value;
 		updatedData[selectedData.index][selectedData.key].value = newValue;
+
+		if (!newValue) {
+			setShowWarning(true);
+			setWarning("Value cannot be empty");
+            setEditButtonsDisabled(false);
+			updatedData[selectedData.index][selectedData.key].value = oldValue;
+			return;
+		}
+		if (newValue === oldValue) {
+			setEditButtonsDisabled(false);
+			return;
+		}
 
 		const id = updatedData[selectedData.index].id.value;
 		const table = updatedData[selectedData.index][selectedData.key].table;
@@ -27,20 +41,40 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 			body: JSON.stringify({ id, table, field, value }),
 		});
 
-		setSavingChanges(false);
+		if (updateResponse.status === 400) {
+			setWarning("Value cannot be empty");
+			setShowWarning(true);
+		}
+
+		if (updateResponse.status === 500 && canCreateRow[table] && !oldValue) {
+			const createResponse = null;
+			console.log("this block would handle the creation of this table");
+			setEditButtonsDisabled(false);
+			return;
+		}
+
+		setEditButtonsDisabled(false);
 
 		if (!updateResponse.ok) {
 			updatedData[selectedData.index][selectedData.key].value = oldValue;
 			return;
 		}
+
+		setShowWarning(false);
 		setData(updatedData);
 		setEditing(false);
 	}
 
+    useEffect(() => {
+        if (editing) return;
+        setShowWarning(false);
+        setEditButtonsDisabled(false);
+	}, [editing]);
+
 	return !data || data?.length === 0 ? (
 		<Loading />
 	) : editing ? (
-		<EditTableData data={data} selectedData={selectedData} setEditing={setEditing} handleSaveChanges={handleSaveChanges} savingChanges={savingChanges} />
+		<EditTableData data={data} selectedData={selectedData} setEditing={setEditing} handleSaveChanges={handleSaveChanges} editButtonsDisabled={editButtonsDisabled} setEditButtonsDisabled={setEditButtonsDisabled} showWarning={showWarning} setShowWarning={setShowWarning} warning={warning} setWarning={setWarning} />
 	) : (
 		<div className="flex shadow-md bg-[#160f33] text-violet-100 min-h-full">
 			{/* Header Data */}
@@ -88,10 +122,16 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 	);
 }
 
-function EditTableData({ data, selectedData, setEditing, handleSaveChanges, savingChanges }) {
+function EditTableData({ data, selectedData, setEditing, handleSaveChanges, editButtonsDisabled, setEditButtonsDisabled, showWarning, setShowWarning, warning, setWarning }) {
 	const [inputValue, setInputValue] = useState(data[selectedData.index][selectedData.key].value ? data[selectedData.index][selectedData.key].value : "");
-	const showWarning = selectedData.key === "id";
+    if (selectedData.key === "id") {
+        setShowWarning(true);
+        setEditButtonsDisabled(true);
+		setWarning("You cannot change this field!");
+	}
+
 	console.log(selectedData);
+
 	return (
 		<div className="bg-[#160f33] relative w-full h-full flex justify-center items-center text-md">
 			<button className="absolute left-0 top-0 m-5 p-1 w-11 h-11 hover:cursor-pointer bg-indigo-900 rounded-full shadow-md/40" onClick={() => setEditing(false)}>
@@ -106,20 +146,19 @@ function EditTableData({ data, selectedData, setEditing, handleSaveChanges, savi
 						setInputValue(e.target.value);
 					}}
 				/>
-				{showWarning ? (
+				{showWarning && (
 					<span id="warning-field" className="text-yellow-600">
-						You cannot change this field!
+						{warning}
 					</span>
-				) : (
-					<div className="flex gap-2">
-						<button disabled={savingChanges} className={`bg-sky-700 border-2 border-sky-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md disabled:bg-gray-700 disabled:border-gray-700`} onClick={() => handleSaveChanges(inputValue)}>
-							Save Changes
-						</button>
-						<button disabled={savingChanges} className={`bg-rose-700 border-2 border-rose-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md disabled:bg-gray-700 disabled:border-gray-700`} onClick={() => setEditing(false)}>
-							Cancel
-						</button>
-					</div>
 				)}
+				<div className="flex gap-2">
+					<button disabled={editButtonsDisabled} className={`bg-sky-700 border-2 border-sky-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md disabled:bg-gray-700 disabled:border-gray-700 disabled:cursor-not-allowed`} onClick={() => handleSaveChanges(inputValue)}>
+						Save Changes
+					</button>
+					<button disabled={editButtonsDisabled} className={`bg-rose-700 border-2 border-rose-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md disabled:bg-gray-700 disabled:border-gray-700 disabled:cursor-not-allowed`} onClick={() => setEditing(false)}>
+						Cancel
+					</button>
+				</div>
 			</div>
 		</div>
 	);

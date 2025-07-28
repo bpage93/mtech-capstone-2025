@@ -62,10 +62,22 @@ router.get("/view", async (req, res) => {
 				wrapped[field] = {
 					value,
 					table,
+					creation: false,
 				};
 			}
 			return wrapped;
 		});
+		const creationColumn = {};
+		for (const key of Object.keys(userResults.rows[0])) {
+			const splitKey = key.split("_");
+			const [table, field] = [splitKey[0], splitKey.slice(1).join("_")];
+			creationColumn[field] = {
+				value: "",
+				table,
+				creation: true,
+			};
+		}
+		modifiedData.push(creationColumn);
 		res.status(200).json({
 			data: modifiedData,
 			pagination: {

@@ -25,6 +25,7 @@ router.patch("/update", async (req, res) => {
 
 	let { id, table, field, value } = req.body;
 
+	if (!value) return res.status(400).json({ error: "Must be a value" });
 	if (field === "id") return res.status(403).json({ error: "access denied" });
 	const referencedKey = tableReferenceKeys[table];
 	if (table === "user") table = '"user"';
@@ -46,5 +47,25 @@ router.patch("/update", async (req, res) => {
 		res.status(500).json({ error: error.message });
 	}
 });
+
+// router.put(async (req, res) => {
+// 	const token = req.headers.authorization?.split(" ")[1];
+// 	if (!token) {
+// 		return res.status(401).json({ error: "No token provided" });
+// 	}
+// 	const isAdminResponse = await fetch(`${process.env.BACKEND_URL}/api/auth/admin`, {
+// 		headers: {
+// 			Authorization: `Bearer ${token}`,
+// 		},
+// 	});
+// 	if (!isAdminResponse.ok) {
+// 		return res.status(403).json({ error: "access denied" });
+// 	}
+
+// 	try {
+// 	} catch (error) {
+// 		res.status(500).json({ error: error.message });
+// 	}
+// });
 
 module.exports = router;
