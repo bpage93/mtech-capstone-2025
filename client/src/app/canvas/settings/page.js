@@ -11,7 +11,6 @@ export default function SettingsPage() {
     const [role, setRole] = useState("student");
     const [theme, setTheme] = useState("dark");
 
-    // Apply theme to the <html> tag
     useEffect(() => {
         if (typeof window !== "undefined") {
             document.documentElement.setAttribute("data-theme", theme);
@@ -39,8 +38,8 @@ export default function SettingsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-base-200 flex justify-center items-center p-6">
-            <div className="card bg-base-100 shadow-xl w-full max-w-2xl p-6">
+        <div className="min-h-screen bg-base-200 flex p-6">
+            <div className="bg-base-100 shadow-xl w-full p-6">
                 <h2 className="text-2xl font-bold mb-4">⚙️ Settings</h2>
                 <SettingsForm
                     name={name}
