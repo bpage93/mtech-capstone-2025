@@ -95,9 +95,9 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 			}
 		}
 
-        setEditButtonsDisabled(false);
-        setCreating(false);
-        setEditing(false);
+		setEditButtonsDisabled(false);
+		setCreating(false);
+		setEditing(false);
 	}
 
 	async function handleRowCreation() {
@@ -180,6 +180,53 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 		}
 	}
 
+	async function handleSingleTableDeletion(data) {
+		console.log(data);
+		if (data.table === "enrollment") {
+			const deletionResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/database/delete/enrollment`, {
+				method: "DELETE",
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ primary_key: data.primary_key }),
+			});
+			if (deletionResponse.ok) {
+				getData();
+			}
+		}
+	}
+
+	async function handleMultiTableDeletion(data) {
+		if (!data) return;
+
+		if (mode === availableModes.users) {
+			const deletionResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/delete`, {
+				method: "DELETE",
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ user_id: data.role.primary_key }),
+			});
+			if (deletionResponse.ok) {
+				getData();
+			}
+		} else if (mode === availableModes.courses) {
+			const deletionResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/courses/delete`, {
+				method: "DELETE",
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ course_id: data.title.primary_key }),
+			});
+			if (deletionResponse.ok) {
+				getData();
+			}
+		}
+	}
+
 	useEffect(() => {
 		if (editing || creating) return;
 		setShowWarning(false);
@@ -189,7 +236,7 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 	return !data || data?.length === 0 ? (
 		<Loading />
 	) : editing || creating ? (
-		<EditTableData data={data} selectedData={selectedData} setCreating={setCreating} editing={editing} setEditing={setEditing} handleSaveChanges={handleSaveChanges} editButtonsDisabled={editButtonsDisabled} setEditButtonsDisabled={setEditButtonsDisabled} showWarning={showWarning} setShowWarning={setShowWarning} warning={warning} setWarning={setWarning} handleTableCreation={handleTableCreation} />
+		<EditTableData data={data} selectedData={selectedData} setCreating={setCreating} editing={editing} setEditing={setEditing} handleSaveChanges={handleSaveChanges} editButtonsDisabled={editButtonsDisabled} setEditButtonsDisabled={setEditButtonsDisabled} showWarning={showWarning} setShowWarning={setShowWarning} warning={warning} setWarning={setWarning} handleTableCreation={handleTableCreation} handleSingleTableDeletion={handleSingleTableDeletion} />
 	) : (
 		<div className="flex shadow-md bg-[#160f33] text-violet-100 min-h-full">
 			{/* Header Data */}
@@ -223,7 +270,14 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 										</div>
 									</button>
 								) : (
-									<h3 className={`${rowSelected ? "bg-indigo-800" : "bg-[#18153a]"} flex items-center justify-center px-4 h-13 sticky`}>{index + 1}</h3>
+									<div className={`${rowSelected ? "bg-indigo-800" : "bg-[#18153a]"} flex items-center justify-center px-4 h-13 sticky`}>
+										<h3>{index + 1}</h3>
+										{ rowSelected &&
+											<button type="button" className="w-7 h-7 p-1 hover:cursor-pointer rounded-lg bg-rose-700 absolute right-3" aria-label="Delete this data" onClick={() => handleMultiTableDeletion(data[index])}>
+												<img src="/svgs/delete.svg" alt="" className="w-full h-full" />
+											</button>
+										}
+									</div>
 								)}
 								{Object.entries(row).map(([key, data], j) => {
 									const dataSelected = selectedData.index === index && selectedData.key === key;
@@ -235,17 +289,17 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 													<div className="flex gap-x-1">
 														{(data.value || data.creation) && (
 															<button type="button" className="w-7 h-7 p-1 hover:cursor-pointer rounded-lg bg-indigo-700" aria-label="Edit this data" onClick={() => setEditing(true)}>
-																<img src="/svgs/edit.svg" alt="Edit" className="w-full h-full" />
+																<img src="/svgs/edit.svg" alt="" className="w-full h-full" />
 															</button>
 														)}
 														{oneToManyTables.includes(data.table) && (
 															<>
 																<button type="button" className="w-7 h-7 p-1 hover:cursor-pointer rounded-lg bg-emerald-700" aria-label="Create this data" onClick={() => setCreating(true)}>
-																	<img src="/svgs/add_2.svg" alt="Edit" className="w-full h-full" />
+																	<img src="/svgs/add_2.svg" alt="" className="w-full h-full" />
 																</button>
 																{data.value && (
-																	<button type="button" className="w-7 h-7 p-1 hover:cursor-pointer rounded-lg bg-rose-700" aria-label="Edit this data" onClick={() => setEditing(true)}>
-																		<img src="/svgs/delete.svg" alt="Edit" className="w-full h-full" />
+																	<button type="button" className="w-7 h-7 p-1 hover:cursor-pointer rounded-lg bg-rose-700" aria-label="Delete this data" onClick={() => handleSingleTableDeletion(data)}>
+																		<img src="/svgs/delete.svg" alt="" className="w-full h-full" />
 																	</button>
 																)}
 															</>
@@ -265,7 +319,7 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 }
 
 function EditTableData({ data, selectedData, editing, setEditing, setCreating, handleSaveChanges, editButtonsDisabled, setEditButtonsDisabled, showWarning, setShowWarning, warning, setWarning, handleTableCreation }) {
-	const [inputValue, setInputValue] = useState(editing ? data[selectedData.index][selectedData.key].value ? data[selectedData.index][selectedData.key].value : "" : "");
+	const [inputValue, setInputValue] = useState(editing ? (data[selectedData.index][selectedData.key].value ? data[selectedData.index][selectedData.key].value : "") : "");
 
 	console.log(selectedData);
 
@@ -323,13 +377,6 @@ function EditTableData({ data, selectedData, editing, setEditing, setCreating, h
 		</div>
 	);
 }
-
-//
-//
-//
-//
-//
-//
 
 function Pagination({ currentPage, setCurrentPage, pagination }) {
 	const [inputPageValue, setInputPageValue] = useState(currentPage);

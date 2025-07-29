@@ -124,4 +124,30 @@ router.put("/create", async (req, res) => {
 	}
 });
 
+router.delete("/delete", async (req, res) => {
+	const token = req.headers.authorization?.split(" ")[1];
+	if (!token) {
+		return res.status(401).json({ error: "No token provided" });
+	}
+	const isAdminResponse = await fetch(`${process.env.BACKEND_URL}/api/auth/admin`, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+	if (!isAdminResponse.ok) {
+		return res.status(403).json({ error: "access denied" });
+	}
+
+	const course_id = req.body.course_id;
+	if (!course_id) return res.status(400).json({ message: "missing course_id" });
+
+	try {
+		const deletionResponse = await query("DELETE FROM course WHERE id = $1", [course_id]);
+
+		return res.status(200).json({ message: "Course deleted." });
+	} catch (err) {
+		return res.status(500).json({ error: "Internal server error" });
+	}
+});
+
 module.exports = router;

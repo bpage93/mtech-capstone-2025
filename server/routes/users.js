@@ -101,17 +101,17 @@ router.get("/view", async (req, res) => {
 
 router.post("/create", async (req, res) => {
 	const user = req.body.user;
-    const token = req.headers.authorization?.split(" ")[1];
-    let isAdmin = false;
+	const token = req.headers.authorization?.split(" ")[1];
+	let isAdmin = false;
 	if (token) {
 		const isAdminResponse = await fetch(`${process.env.BACKEND_URL}/api/auth/admin`, {
 			headers: {
 				Authorization: `Bearer ${token}`,
 			},
-        });
-        if (isAdminResponse.ok) {
-            isAdmin = true;
-        }
+		});
+		if (isAdminResponse.ok) {
+			isAdmin = true;
+		}
 	}
 
 	const client = await pool.connect();
@@ -186,6 +186,44 @@ router.post("/login", async (req, res) => {
 	} catch (error) {
 		console.error("Login Error:", error);
 		return res.status(500).json({ error: "Internal Server Error" });
+	}
+});
+
+router.delete("/delete", async (req, res) => {
+	const token = req.headers.authorization?.split(" ")[1];
+	if (!token) {
+		return res.status(401).json({ error: "No token provided" });
+	}
+	const isAdminResponse = await fetch(`${process.env.BACKEND_URL}/api/auth/admin`, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+	if (!isAdminResponse.ok) {
+		return res.status(403).json({ error: "access denied" });
+    }
+    
+	const user_id = req.body.user_id;
+	if (!user_id) return res.status(400).json({ message: "missing user_id" });
+
+	const client = await pool.connect();
+
+	try {
+		await client.query("BEGIN");
+
+		await client.query("DELETE FROM enrollment WHERE user_id = $1", [user_id]);
+		await client.query("DELETE FROM address WHERE user_id = $1", [user_id]);
+
+		await client.query('DELETE FROM "user" WHERE id = $1', [user_id]);
+
+        await client.query("COMMIT");
+        
+		res.status(200).json({ message: "User and related data deleted." });
+	} catch (err) {
+		await client.query("ROLLBACK");
+		res.status(500).json({ error: "Internal server error" });
+	} finally {
+		client.release();
 	}
 });
 

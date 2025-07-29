@@ -76,4 +76,37 @@ router.put("/create/enrollment", async (req, res) => {
 	}
 });
 
+router.delete("/delete/enrollment", async (req, res) => {
+	const token = req.headers.authorization?.split(" ")[1];
+	if (!token) {
+		return res.status(401).json({ error: "No token provided" });
+	}
+	const isAdminResponse = await fetch(`${process.env.BACKEND_URL}/api/auth/admin`, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+	if (!isAdminResponse.ok) {
+		return res.status(403).json({ error: "access denied" });
+	}
+
+	const primary_key = req.body.primary_key;
+	if (!primary_key) return res.status(400).json({ error: "missing primary_key" });
+
+	try {
+		const deletionResult = await query(
+			`
+            DELETE FROM enrollment
+            WHERE id = $1
+        `,
+			[primary_key]
+		);
+
+		if (deletionResult.rowCount === 0) return res.status(500).json({ error: "failed to delete" });
+		return res.status(200).json({ message: "successfully deleted row" });
+	} catch (error) {
+		return res.status(500).json({ error: error.message });
+	}
+});
+
 module.exports = router;
