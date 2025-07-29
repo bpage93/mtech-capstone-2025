@@ -41,7 +41,7 @@ router.patch("/update", async (req, res) => {
 	}
 });
 
-router.put("/create-enrollment", async (req, res) => {
+router.put("/create/enrollment", async (req, res) => {
 	const token = req.headers.authorization?.split(" ")[1];
 	if (!token) {
 		return res.status(401).json({ error: "No token provided" });
@@ -56,7 +56,11 @@ router.put("/create-enrollment", async (req, res) => {
 	}
 
 	const { primaryKey, table, field, value, user_id } = req.body;
-	if (table !== "enrollment") return;
+
+	if (table !== "enrollment") return res.status(400).json({ error: "table must be enrollment" });
+	if (!value) return res.status(400).json({ error: "must be a value" });
+	if (!user_id) return res.status(400).json({ error: "missing user_id" });
+
 	try {
 		const creationResult = await query(
 			`

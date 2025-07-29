@@ -1,12 +1,14 @@
 import Loading from "@/app/canvas/loading";
 import { useState, useEffect } from "react";
 
-export default function AdminTable({ data, setData, currentPage, setCurrentPage, pagination, oneToManyTables }) {
+export default function AdminTable({ data, setData, currentPage, setCurrentPage, pagination, oneToManyTables, mode, availableModes, getData }) {
 	const [selectedData, setSelectedData] = useState({ index: 0, key: "id" });
 	const [editing, setEditing] = useState(false);
+	const [creating, setCreating] = useState(false);
 	const [editButtonsDisabled, setEditButtonsDisabled] = useState(false);
 	const [showWarning, setShowWarning] = useState(false);
 	const [warning, setWarning] = useState("");
+	const token = localStorage.getItem("jwtToken");
 
 	async function handleSaveChanges(newValue) {
 		setEditButtonsDisabled(true);
@@ -14,81 +16,180 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 		const oldValue = data[selectedData.index][selectedData.key].value;
 		updatedData[selectedData.index][selectedData.key].value = newValue;
 
-		if (!newValue) {
-			setShowWarning(true);
-			setWarning("Value cannot be empty");
-			setEditButtonsDisabled(false);
-			updatedData[selectedData.index][selectedData.key].value = oldValue;
-			return;
-		}
-		if (newValue === oldValue) {
-			setEditButtonsDisabled(false);
-			setEditing(false);
-			return;
-		}
-
-		const primaryKey = updatedData[selectedData.index][selectedData.key].primary_key;
-		const table = updatedData[selectedData.index][selectedData.key].table;
-		const field = selectedData.key;
-		const value = newValue;
-
-		const token = localStorage.getItem("jwtToken");
-		const updateResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/database/update`, {
-			method: "PATCH",
-			headers: {
-				Authorization: `Bearer ${token}`,
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ primaryKey, table, field, value }),
-		});
-
-		if (updateResponse.status === 400) {
-			setWarning("Value cannot be empty");
-			setShowWarning(true);
-		}
-
-		if (updateResponse.status === 500 && !oldValue) {
-			console.log("this block would handle the creation of this table");
-			if (table === "enrollment") {
-				const user_id = updatedData[selectedData.index].role.primary_key;
-				const creationResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/database/create-enrollment`, {
-					method: "PUT",
-					headers: {
-						Authorization: `Bearer ${token}`,
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({ primaryKey, table, field, value, user_id }),
-				});
-				if (creationResponse.ok) {
-					console.log("success");
-				}
+		if (updatedData[selectedData.index][selectedData.key].creation) {
+		} else {
+			if (!newValue) {
+				setShowWarning(true);
+				setWarning("Value cannot be empty");
+				setEditButtonsDisabled(false);
+				updatedData[selectedData.index][selectedData.key].value = oldValue;
+				return;
 			}
+			if (newValue === oldValue) {
+				setEditButtonsDisabled(false);
+				setEditing(false);
+				setCreating(false);
+				return;
+			}
+
+			const primaryKey = updatedData[selectedData.index][selectedData.key].primary_key;
+			const table = updatedData[selectedData.index][selectedData.key].table;
+			const field = selectedData.key;
+			const value = newValue;
+
+			const updateResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/database/update`, {
+				method: "PATCH",
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ primaryKey, table, field, value, newValue }),
+			});
+
+			if (updateResponse.status === 400) {
+				setWarning("Value cannot be empty");
+				setShowWarning(true);
+			}
+
+			if (updateResponse.status === 500 && !oldValue) {
+				handleTableCreation(value, primaryKey, table, field);
+				return;
+			}
+
 			setEditButtonsDisabled(false);
-			return;
+
+			if (!updateResponse.ok) {
+				updatedData[selectedData.index][selectedData.key].value = oldValue;
+				return;
+			}
 		}
-
-		setEditButtonsDisabled(false);
-
-		if (!updateResponse.ok) {
-			updatedData[selectedData.index][selectedData.key].value = oldValue;
-			return;
-		}
-
 		setShowWarning(false);
 		setData(updatedData);
 		setEditing(false);
+		setCreating(false);
+	}
+
+	async function handleTableCreation(value, primaryKey = "", table = "", field = "") {
+		setEditButtonsDisabled(true);
+
+		if (!primaryKey || !table || !field) {
+			primaryKey = data[selectedData.index][selectedData.key].primary_key;
+			table = data[selectedData.index][selectedData.key].table;
+			field = selectedData.key;
+		}
+
+		if (table === "enrollment") {
+			console.log({ value });
+			const user_id = data[selectedData.index].role.primary_key;
+			const creationResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/database/create/enrollment`, {
+				method: "PUT",
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ primaryKey, table, field, value, user_id }),
+			});
+			if (creationResponse.ok) {
+				getData();
+				console.log("success");
+			}
+		}
+
+        setEditButtonsDisabled(false);
+        setCreating(false);
+        setEditing(false);
+	}
+
+	async function handleRowCreation() {
+		const creationRow = data[data.length - 1];
+		console.log({ creationRow });
+		let rowCanBeCreated = true;
+		for (const value of Object.values(creationRow)) {
+			if (!value.value) rowCanBeCreated = false;
+		}
+		console.log(rowCanBeCreated);
+
+		if (mode === availableModes.users) {
+			const user = {};
+			user.role = creationRow.role.value;
+			user.email = creationRow.email.value;
+			user.firstname = creationRow.firstname.value;
+			user.lastname = creationRow.lastname.value;
+			user.telephone = creationRow.telephone.value;
+			user.username = creationRow.username.value;
+			user.street = creationRow.street.value;
+			user.city = creationRow.city.value;
+			user.state = creationRow.state.value;
+			user.zip = creationRow.zip.value;
+			user.password = "password";
+
+			let emptyValues = false;
+			for (const value of Object.values(user)) {
+				if (!value) {
+					emptyValues = true;
+					break;
+				}
+			}
+
+			if (emptyValues) return;
+
+			const userCreationResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/create`, {
+				method: "POST",
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ user }),
+			});
+
+			if (userCreationResponse.ok) {
+				getData();
+			}
+		} else if (mode === availableModes.courses) {
+			const course = {};
+			course.title = creationRow.title.value;
+			course.description = creationRow.description.value;
+			course.schedule = creationRow.schedule.value;
+			course.classroom_number = creationRow.classroom_number.value;
+			course.maximum_capacity = creationRow.maximum_capacity.value;
+			course.credit_hours = creationRow.credit_hours.value;
+			course.tuition_cost = creationRow.tuition_cost.value;
+
+			let emptyValues = false;
+			for (const value of Object.values(course)) {
+				if (!value) {
+					emptyValues = true;
+					break;
+				}
+			}
+
+			if (emptyValues) return;
+
+			const courseCreationResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/courses/create`, {
+				method: "PUT",
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ course }),
+			});
+
+			if (courseCreationResponse.ok) {
+				getData();
+			}
+		}
 	}
 
 	useEffect(() => {
-		if (editing) return;
+		if (editing || creating) return;
 		setShowWarning(false);
 		setEditButtonsDisabled(false);
-	}, [editing]);
+	}, [editing, creating]);
 
 	return !data || data?.length === 0 ? (
 		<Loading />
-	) : editing ? (
-		<EditTableData data={data} selectedData={selectedData} setEditing={setEditing} handleSaveChanges={handleSaveChanges} editButtonsDisabled={editButtonsDisabled} setEditButtonsDisabled={setEditButtonsDisabled} showWarning={showWarning} setShowWarning={setShowWarning} warning={warning} setWarning={setWarning} />
+	) : editing || creating ? (
+		<EditTableData data={data} selectedData={selectedData} setCreating={setCreating} editing={editing} setEditing={setEditing} handleSaveChanges={handleSaveChanges} editButtonsDisabled={editButtonsDisabled} setEditButtonsDisabled={setEditButtonsDisabled} showWarning={showWarning} setShowWarning={setShowWarning} warning={warning} setWarning={setWarning} handleTableCreation={handleTableCreation} />
 	) : (
 		<div className="flex shadow-md bg-[#160f33] text-violet-100 min-h-full">
 			{/* Header Data */}
@@ -115,7 +216,15 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 						const rowSelected = selectedData.index === index;
 						return (
 							<div key={index} className="flex flex-col font-medium text-lg w-full min-w-40 border-l border-white/10">
-								<h3 className={`${rowSelected ? "bg-indigo-800" : "bg-[#18153a]"} flex items-center justify-center px-4 h-13 sticky`}>{index + 1}</h3>
+								{isCreationRow ? (
+									<button className={`bg-emerald-600 flex items-center justify-center px-4 h-13 sticky`} aria-label="add new column" onClick={handleRowCreation}>
+										<div className="w-8 h-8">
+											<img src="/svgs/add_2.svg" alt="" className="w-full h-full" />
+										</div>
+									</button>
+								) : (
+									<h3 className={`${rowSelected ? "bg-indigo-800" : "bg-[#18153a]"} flex items-center justify-center px-4 h-13 sticky`}>{index + 1}</h3>
+								)}
 								{Object.entries(row).map(([key, data], j) => {
 									const dataSelected = selectedData.index === index && selectedData.key === key;
 									return (
@@ -131,7 +240,7 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 														)}
 														{oneToManyTables.includes(data.table) && (
 															<>
-																<button type="button" className="w-7 h-7 p-1 hover:cursor-pointer rounded-lg bg-emerald-700" aria-label="Edit this data" onClick={() => setEditing(true)}>
+																<button type="button" className="w-7 h-7 p-1 hover:cursor-pointer rounded-lg bg-emerald-700" aria-label="Create this data" onClick={() => setCreating(true)}>
 																	<img src="/svgs/add_2.svg" alt="Edit" className="w-full h-full" />
 																</button>
 																{data.value && (
@@ -155,19 +264,20 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 	);
 }
 
-function EditTableData({ data, selectedData, setEditing, handleSaveChanges, editButtonsDisabled, setEditButtonsDisabled, showWarning, setShowWarning, warning, setWarning }) {
-	const [inputValue, setInputValue] = useState(data[selectedData.index][selectedData.key].value ? data[selectedData.index][selectedData.key].value : "");
-	if (selectedData.key === "id") {
-		setShowWarning(true);
-		setEditButtonsDisabled(true);
-		setWarning("You cannot change this field!");
-	}
+function EditTableData({ data, selectedData, editing, setEditing, setCreating, handleSaveChanges, editButtonsDisabled, setEditButtonsDisabled, showWarning, setShowWarning, warning, setWarning, handleTableCreation }) {
+	const [inputValue, setInputValue] = useState(editing ? data[selectedData.index][selectedData.key].value ? data[selectedData.index][selectedData.key].value : "" : "");
 
 	console.log(selectedData);
 
 	return (
 		<div className="bg-[#160f33] relative w-full h-full flex justify-center items-center text-md">
-			<button className="absolute left-0 top-0 m-5 p-1 w-11 h-11 hover:cursor-pointer bg-indigo-900 rounded-full shadow-md/40" onClick={() => setEditing(false)}>
+			<button
+				className="absolute left-0 top-0 m-5 p-1 w-11 h-11 hover:cursor-pointer bg-indigo-900 rounded-full shadow-md/40"
+				onClick={() => {
+					setEditing(false);
+					setCreating(false);
+				}}
+			>
 				<img src="/svgs/arrow_back.svg" alt="" className="w-full h-full" />
 			</button>
 			<div className="flex flex-col gap-y-2 w-1/2">
@@ -185,10 +295,27 @@ function EditTableData({ data, selectedData, setEditing, handleSaveChanges, edit
 					</span>
 				)}
 				<div className="flex gap-2">
-					<button disabled={editButtonsDisabled} className={`bg-sky-700 border-2 border-sky-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md disabled:bg-gray-700 disabled:border-gray-700 disabled:cursor-not-allowed`} onClick={() => handleSaveChanges(inputValue)}>
-						Save Changes
+					<button
+						disabled={editButtonsDisabled}
+						className={`bg-sky-700 border-2 border-sky-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md disabled:bg-gray-700 disabled:border-gray-700 disabled:cursor-not-allowed`}
+						onClick={() => {
+							if (editing) {
+								handleSaveChanges(inputValue);
+							} else {
+								handleTableCreation(inputValue);
+							}
+						}}
+					>
+						{editing ? "Save Changes" : "Create"}
 					</button>
-					<button disabled={editButtonsDisabled} className={`bg-rose-700 border-2 border-rose-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md disabled:bg-gray-700 disabled:border-gray-700 disabled:cursor-not-allowed`} onClick={() => setEditing(false)}>
+					<button
+						disabled={editButtonsDisabled}
+						className={`bg-rose-700 border-2 border-rose-700 px-3 py-1 rounded-md hover:cursor-pointer shadow-md disabled:bg-gray-700 disabled:border-gray-700 disabled:cursor-not-allowed`}
+						onClick={() => {
+							setEditing(false);
+							setCreating(false);
+						}}
+					>
 						Cancel
 					</button>
 				</div>

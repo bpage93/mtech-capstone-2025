@@ -41,8 +41,7 @@ router.get("/view", async (req, res) => {
             OFFSET $2;
         `,
 			[coursesPerPage, offset]
-        );
-        const nonEditableFields = ["id"]
+		);
 		const modifiedData = coursesResult.rows.map((row) => {
 			const wrapped = {};
 			for (const [key, value] of Object.entries(row)) {
@@ -62,16 +61,16 @@ router.get("/view", async (req, res) => {
 		const creationColumn = {};
 		for (const key of Object.keys(coursesResult.rows[0])) {
 			const splitKey = key.split("_");
-            const [table, field] = [splitKey[0], splitKey.slice(1).join("_")];
-            if (field === "id") continue;
-            creationColumn[field] = {
+			const [table, field] = [splitKey[0], splitKey.slice(1).join("_")];
+			if (field === "id") continue;
+			creationColumn[field] = {
 				value: "",
 				table,
 				creation: true,
 				primary_key: null,
 			};
-        }
-        modifiedData.push(creationColumn);
+		}
+		modifiedData.push(creationColumn);
 		res.status(200).json({
 			data: modifiedData,
 			pagination: {
@@ -83,6 +82,45 @@ router.get("/view", async (req, res) => {
 		});
 	} catch (error) {
 		res.status(500).json({ error: error.message });
+	}
+});
+
+router.put("/create", async (req, res) => {
+	const token = req.headers.authorization?.split(" ")[1];
+	if (!token) {
+		return res.status(401).json({ error: "No token provided" });
+	}
+	const isAdminResponse = await fetch(`${process.env.BACKEND_URL}/api/auth/admin`, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+	if (!isAdminResponse.ok) {
+		return res.status(403).json({ error: "access denied" });
+	}
+
+	try {
+		const course = req.body.course;
+
+		for (const value of Object.values(course)) {
+			if (!value) {
+				return res.status(400).json({ error: "missing fields" });
+			}
+		}
+
+		const courseCreationResponse = await query(
+			`
+            INSERT INTO course (title, description, schedule, classroom_number, maximum_capacity, credit_hours, tuition_cost) VALUES
+            ($1, $2, $3, $4, $5, $6, $7)    
+        `,
+			[course.title, course.description, course.schedule, course.classroom_number, course.maximum_capacity, course.credit_hours, course.tuition_cost]
+		);
+
+		if (courseCreationResponse.rowCount === 0) return res.status(500).json({ error: "failed to create" });
+
+		return res.status(200).json({ message: "created course" });
+	} catch (error) {
+		return res.status(500).json({ error: error.message });
 	}
 });
 

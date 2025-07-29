@@ -55,19 +55,19 @@ router.get("/view", async (req, res) => {
             OFFSET $2;
         `,
 			[usersPerPage, offset]
-        );
-        const modifiedData = userResults.rows.map((row) => {
+		);
+		const modifiedData = userResults.rows.map((row) => {
 			const wrapped = {};
-            for (const [key, value] of Object.entries(row)) {
-                const splitKey = key.split("_");
-                const [table, field] = [splitKey[0], splitKey.slice(1).join("_")];
-                const primary_key = row[`${table}_id`];
-                if (field === "id") continue;
+			for (const [key, value] of Object.entries(row)) {
+				const splitKey = key.split("_");
+				const [table, field] = [splitKey[0], splitKey.slice(1).join("_")];
+				const primary_key = row[`${table}_id`];
+				if (field === "id") continue;
 				wrapped[field] = {
 					value,
 					table,
 					creation: false,
-                    primary_key,
+					primary_key,
 				};
 			}
 			return wrapped;
@@ -75,13 +75,13 @@ router.get("/view", async (req, res) => {
 		const creationColumn = {};
 		for (const key of Object.keys(userResults.rows[0])) {
 			const splitKey = key.split("_");
-            const [table, field] = [splitKey[0], splitKey.slice(1).join("_")];
-            if (field === "id") continue;
+			const [table, field] = [splitKey[0], splitKey.slice(1).join("_")];
+			if (["id", "course_id"].includes(field)) continue;
 			creationColumn[field] = {
 				value: "",
 				table,
 				creation: true,
-                primary_key: null,
+				primary_key: null,
 			};
 		}
 		modifiedData.push(creationColumn);
@@ -101,6 +101,18 @@ router.get("/view", async (req, res) => {
 
 router.post("/create", async (req, res) => {
 	const user = req.body.user;
+    const token = req.headers.authorization?.split(" ")[1];
+    let isAdmin = false;
+	if (token) {
+		const isAdminResponse = await fetch(`${process.env.BACKEND_URL}/api/auth/admin`, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+        });
+        if (isAdminResponse.ok) {
+            isAdmin = true;
+        }
+	}
 
 	const client = await pool.connect();
 	try {
@@ -112,7 +124,7 @@ router.post("/create", async (req, res) => {
                 ($1, $2, $3, $4, $5, $6, $7)
             RETURNING id
         `,
-			["student", user.email, user.firstname, user.lastname, user.telephone, user.username, hashedPassword]
+			[isAdmin ? user.role : "student", user.email, user.firstname, user.lastname, user.telephone, user.username, hashedPassword]
 		);
 
 		const userId = userResult.rows[0].id;

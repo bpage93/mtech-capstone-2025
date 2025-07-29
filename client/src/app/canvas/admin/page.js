@@ -33,24 +33,25 @@ export default function AdminCanvasPage() {
 			setCurrentPage(1);
 			return;
 		}
-		const token = localStorage.getItem("jwtToken");
-		async function getData() {
-			const dataRequest = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/${mode === availableModes.users ? "users" : "courses"}/view?page=${currentPage}`, {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			});
-			if (dataRequest.ok) {
-				const { data, pagination } = await dataRequest.json();
-				console.log(data);
-				setTableData(data);
-				setPagination(pagination);
-			} else if (dataRequest.status === 403 || dataRequest.status === 401) {
-				router.push("/");
-			}
-		}
 		getData();
 	}, [currentPage]);
+
+	async function getData() {
+		const token = localStorage.getItem("jwtToken");
+		const dataRequest = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/${mode === availableModes.users ? "users" : "courses"}/view?page=${currentPage}`, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+		if (dataRequest.ok) {
+			const { data, pagination } = await dataRequest.json();
+			console.log(data);
+			setTableData(data);
+			setPagination(pagination);
+		} else if (dataRequest.status === 403 || dataRequest.status === 401) {
+			router.push("/");
+		}
+	}
 
 	return (
 		<div className="flex flex-col h-full rounded-lg overflow-hidden">
@@ -65,7 +66,7 @@ export default function AdminCanvasPage() {
 			</div>
 
 			<div className="bg-[#140D2E] h-full overflow-y-auto">
-				<AdminTable data={tableData} setData={setTableData} currentPage={currentPage} setCurrentPage={setCurrentPage} pagination={pagination} oneToManyTables={oneToManyTables} />
+				<AdminTable data={tableData} setData={setTableData} currentPage={currentPage} setCurrentPage={setCurrentPage} pagination={pagination} mode={mode} availableModes={availableModes} oneToManyTables={oneToManyTables} getData={getData} />
 			</div>
 		</div>
 	);
