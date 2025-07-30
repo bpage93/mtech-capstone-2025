@@ -53,13 +53,15 @@ function CourseCard({ course }) {
 	const router = useRouter();
 
 	return (
-		<button className="w-full h-50 bg-indigo-950 rounded-lg p-3 flex flex-col text-left hover:cursor-pointer" onClick={() => router.push(`${window.location.origin}/canvas/courses/${course.id}`)}>
-			<h4 className="text-2xl font-semibold truncate text-indigo-100 min-h-fit">{course.title}</h4>
+		<div className="w-full h-50 bg-indigo-950 rounded-lg p-3 flex flex-col text-left">
+			<h4 className="text-2xl font-semibold truncate text-indigo-100 min-h-fit hover:underline hover:cursor-pointer" onClick={() => router.push(`${window.location.origin}/canvas/courses/${course.id}`)}>
+				{course.title}
+			</h4>
 			<div className="flex w-full gap-x-2 text-gray-500 text-sm min-h-fit">
 				<span className="truncate">{course.schedule}</span>
 				<span className="truncate">{course.classroom_number}</span>
 			</div>
 			<p className="line-clamp-5 text-gray-400">{course.description}</p>
-		</button>
+		</div>
 	);
 }
