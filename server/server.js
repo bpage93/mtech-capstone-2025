@@ -31,12 +31,14 @@ const usersRouter = require("./routes/users");
 const coursesRouter = require("./routes/courses");
 const databaseRouter = require("./routes/database");
 const authRouter = require("./routes/auth");
+const enrollmentRouter = require("./routes/enrollment");
 
 // Routes
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/courses", coursesRouter);
 app.use("/api/database", databaseRouter);
+app.use("/api/enrollment", enrollmentRouter);
 
 // Health check route
 app.get("/api", (req, res) => {

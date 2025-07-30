@@ -1,7 +1,117 @@
 const express = require("express");
 const { pool, query } = require("../database/postgresQuery");
+const jwt = require("jsonwebtoken");
 
 const router = express.Router();
+
+router.get("/view/all", async (req, res) => {
+	const token = req.headers.authorization?.split(" ")[1];
+	if (!token) {
+		return res.status(401).json({ error: "No token provided" });
+	}
+	const isLoggedIn = await fetch(`${process.env.BACKEND_URL}/api/auth/token?route=/canvas/courses`, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+	if (!isLoggedIn.ok) {
+		return res.status(403).json({ error: "access denied" });
+	}
+
+	try {
+		const courses = await query(
+			`
+            SELECT
+                c.id,
+                c.title,
+                c.description,
+                c.schedule,
+                c.classroom_number
+            FROM course c;
+        `
+		);
+
+		return res.status(200).json({ courses: courses.rows });
+	} catch (err) {
+		return res.status(500).json({ err });
+	}
+});
+
+router.get("/view/enrolled", async (req, res) => {
+	const token = req.headers.authorization?.split(" ")[1];
+	if (!token) {
+		return res.status(401).json({ error: "No token provided" });
+	}
+	const isAdminResponse = await fetch(`${process.env.BACKEND_URL}/api/auth/admin`, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+	if (isAdminResponse.ok) {
+		return res.status(403).json({ error: "access denied" });
+	}
+
+	const userIdResponse = await fetch(`${process.env.BACKEND_URL}/api/auth/token/user_id`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({ token }),
+	});
+
+	if (!userIdResponse.ok) return res.status(403).json({ error: "error" });
+	const { user_id } = await userIdResponse.json();
+
+	try {
+		const enrolledCourses = await query(
+			`
+            SELECT
+                c.id,
+                c.title,
+                c.description,
+                c.schedule,
+                c.classroom_number
+            FROM course c
+            INNER JOIN enrollment e ON c.id = e.course_id
+            WHERE e.user_id = $1;
+        `,
+			[user_id]
+		);
+
+		return res.status(200).json({ enrolledCourses: enrolledCourses.rows });
+	} catch (err) {
+		return res.status(500).json({ err });
+	}
+});
+
+router.get("/view/:id", async (req, res) => {
+	const courseId = req.params.id;
+	const token = req.headers.authorization?.split(" ")[1];
+	if (!token) return res.status(401).json({ error: "No token provided" });
+	if (!courseId) return res.status(401).json({ error: "No course id provided" });
+
+	try {
+		jwt.verify(token, process.env.JWT_SECRET);
+
+		try {
+			const userEnrolledSearch = await query(
+				`
+                    SELECT *
+                    FROM course c
+                    WHERE c.id = $1;
+                `,
+				[courseId]
+			);
+
+			if (userEnrolledSearch.rows.length === 0) return res.status(403).json({ error: "student is not enrolled in the course" });
+			return res.status(200).json({ course: userEnrolledSearch.rows[0] });
+		} catch (err) {
+			return res.status(500).json({ err });
+		}
+	} catch (error) {
+		return res.status(401).json({ error: "Invalid token" });
+	}
+});
 
 router.get("/view", async (req, res) => {
 	const token = req.headers.authorization?.split(" ")[1];
@@ -142,7 +252,7 @@ router.delete("/delete", async (req, res) => {
 	if (!course_id) return res.status(400).json({ message: "missing course_id" });
 
 	try {
-		const deletionResponse = await query("DELETE FROM course WHERE id = $1", [course_id]);
+		await query("DELETE FROM course WHERE id = $1", [course_id]);
 
 		return res.status(200).json({ message: "Course deleted." });
 	} catch (err) {
