@@ -2,60 +2,153 @@
 
 import { useEffect, useState } from "react";
 import { useTitleContext } from "../contexts/TitleContext";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/app/contexts/AuthContext";
+import Loading from "@/app/canvas/loading";
 
 export default function CoursesPage() {
-    const { updateTitle } = useTitleContext();
-    const [category, setCategory] = useState("");
+	const { updateTitle } = useTitleContext();
+	const [loading, setLoading] = useState(false);
+	const [courses, setCourses] = useState();
+	const [enrolledCourses, setEnrolledCourses] = useState();
+	const [token, setToken] = useState(null);
+	const { user } = useAuth();
+	const router = useRouter();
 
-    useEffect(() => {
-        updateTitle("📚 Courses");
-    }, [updateTitle]);
+	useEffect(() => {
+		updateTitle("Available Courses");
+	}, [updateTitle]);
 
-    return (
-        <div className="space-y-6">
-            {/* Page heading */}
-            <div className="text-3xl font-bold mb-4">Available Courses</div>
+	async function fetchCourses() {
+		setLoading(true);
+		let storedToken = token;
+		if (!token) {
+			storedToken = localStorage.getItem("jwtToken");
+			if (!storedToken) router.push("/");
+		}
+		const coursesResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/courses/view/all`, {
+			headers: {
+				Authorization: `Bearer ${storedToken}`,
+			},
+		});
+		const { courses } = await coursesResponse.json();
+		setCourses(courses);
 
-            {/* Search bar and filter */}
-            <div className="flex flex-col sm:flex-row items-center gap-4">
-                <input
-                    type="text"
-                    placeholder="Search courses..."
-                    className="input input-bordered w-full sm:w-1/2"
-                />
-                <select
-                    className="select select-bordered"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                >
-                    <option value="student" disabled>
-                        Filter by category
-                    </option>
-                    <option value="programming">Programming</option>
-                    <option value="math">Math</option>
-                    <option value="science">Science</option>
-                </select>
-            </div>
+		if (user.role === "student") {
+			const coursesResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/courses/view/enrolled`, {
+				headers: {
+					Authorization: `Bearer ${storedToken}`,
+				},
+			});
+			const { enrolledCourses } = await coursesResponse.json();
+			setEnrolledCourses(enrolledCourses);
+			console.log(enrolledCourses);
+		}
+		setLoading(false);
+	}
 
-            {/* Example course cards */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {[1, 2, 3].map((id) => (
-                    <div key={id} className="card bg-base-200 shadow-md">
-                        <div className="card-body">
-                            <h2 className="card-title">Course {id}</h2>
-                            <p>
-                                Short description of the course goes here.
-                                Topics covered, etc.
-                            </p>
-                            <div className="card-actions justify-end">
-                                <button className="btn btn-primary">
-                                    Register
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
+	useEffect(() => {
+		const storedToken = localStorage.getItem("jwtToken");
+		if (!storedToken) router.push("/");
+		setToken(storedToken);
+		fetchCourses();
+	}, []);
+
+	async function unenrollFromCourse(courseId) {
+		setLoading(true);
+		const unenrollmentResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/enrollment/unenroll`, {
+			method: "DELETE",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify({
+				course_id: courseId,
+			}),
+		});
+		if (!unenrollmentResponse.ok) {
+			console.log("failed to unenroll");
+			setLoading(false);
+			return;
+		}
+		fetchCourses();
+	}
+
+	async function enrollToCourse(courseId) {
+		setLoading(true);
+		const enrollmentResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/enrollment/enroll`, {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify({
+				course_id: courseId,
+			}),
+		});
+		if (!enrollmentResponse.ok) {
+			console.log("Failed to enroll");
+			setLoading(false);
+			return;
+		}
+		fetchCourses();
+	}
+
+	return (
+		<>
+			{!courses || loading ? (
+				<Loading />
+			) : (
+				<div className="bg-[#160f33] h-full w-full rounded-lg overflow-y-auto">
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 w-full h-fit p-4">
+						{courses &&
+							courses.length > 0 &&
+							courses.map((course) => {
+								return <CourseCard key={course.id} course={course} enrolledCourses={enrolledCourses} unenrollFromCourse={unenrollFromCourse} enrollToCourse={enrollToCourse} />;
+							})}
+					</div>
+				</div>
+			)}
+		</>
+	);
+}
+
+function CourseCard({ course, enrolledCourses, unenrollFromCourse, enrollToCourse }) {
+	const router = useRouter();
+	const { user } = useAuth();
+	const [enrolled, setEnrolled] = useState(false);
+
+	useEffect(() => {
+		if (!enrolledCourses) return;
+
+		const isEnrolled = enrolledCourses.some((enrolledCourse) => enrolledCourse.id === course.id);
+		setEnrolled(isEnrolled);
+	}, [enrolledCourses, course.id]);
+
+	return (
+		<div className="w-full h-50 bg-indigo-950 rounded-lg p-3 flex flex-col text-left">
+			<h4 className="text-2xl font-semibold truncate text-indigo-100 min-h-fit hover:underline hover:cursor-pointer" onClick={() => router.push(`${window.location.href}/${course.id}`)}>
+				{course.title}
+			</h4>
+			<div className="flex w-full gap-x-2 text-gray-500 text-sm min-h-fit">
+				<span className="truncate">{course.schedule}</span>
+				<span className="truncate">{course.classroom_number}</span>
+			</div>
+			<p className="line-clamp-4 text-gray-400">{course.description}</p>
+			{user.role === "student" && (
+				<div className="flex justify-center">
+					{!enrolled && (
+						<button className="hover:cursor-pointer hover:underline w-fit font-bold text-emerald-600" onClick={() => enrollToCourse(course.id)}>
+							Enroll for course
+						</button>
+					)}
+					{enrolled && (
+						<button className="hover:cursor-pointer hover:underline w-fit font-bold text-rose-600" onClick={() => unenrollFromCourse(course.id)}>
+							Unenroll from course
+						</button>
+					)}
+				</div>
+			)}
+		</div>
+	);
 }

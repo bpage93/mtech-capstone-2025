@@ -33,29 +33,60 @@ router.get("/view", async (req, res) => {
 		const userResults = await query(
 			`
             SELECT
-                usr.id,
-                usr.role,
-                usr.email,
-                usr.firstname,
-                usr.lastname,
-                usr.telephone,
-                usr.username,
-                address.street,
-                address.city,
-                address.state,
-                address.zip,
-                enrollment.course_id
+                usr.id AS user_id,
+                usr.role AS user_role,
+                usr.email AS user_email,
+                usr.firstname AS user_firstname,
+                usr.lastname AS user_lastname,
+                usr.telephone AS user_telephone,
+                usr.username AS user_username,
+                address.id AS address_id,
+                address.street AS address_street,
+                address.city AS address_city,
+                address.state AS address_state,
+                address.zip AS address_zip,
+                enrollment.id AS enrollment_id,
+                enrollment.course_id AS enrollment_course_id
             FROM "user" usr
             JOIN address ON usr.id = address.user_id
-            LEFT JOIN enrollment on usr.id = enrollment.user_id
+            LEFT JOIN enrollment ON usr.id = enrollment.user_id
             ORDER BY usr.lastname
             LIMIT $1
             OFFSET $2;
         `,
 			[usersPerPage, offset]
 		);
+		const modifiedData = userResults.rows.map((row) => {
+			const wrapped = {};
+			for (const [key, value] of Object.entries(row)) {
+				const splitKey = key.split("_");
+				const [table, field] = [splitKey[0], splitKey.slice(1).join("_")];
+				const primary_key = row[`${table}_id`];
+				if (field === "id") continue;
+				wrapped[field] = {
+					value,
+					table,
+					creation: false,
+					primary_key,
+				};
+			}
+			return wrapped;
+		});
+		const creationColumn = {};
+		for (const key of Object.keys(userResults.rows[0])) {
+			const splitKey = key.split("_");
+			const [table, field] = [splitKey[0], splitKey.slice(1).join("_")];
+			if (["id", "course_id"].includes(field)) continue;
+			creationColumn[field] = {
+				value: "",
+				table,
+				creation: true,
+				primary_key: null,
+			};
+		}
+		modifiedData.push(creationColumn);
 		res.status(200).json({
-			data: userResults.rows,
+			data: modifiedData,
 			pagination: {
 				current_page: page,
 				total_pages: maxPage,
@@ -70,6 +101,18 @@ router.get("/view", async (req, res) => {
 
 router.post("/create", async (req, res) => {
 	const user = req.body.user;
+	const token = req.headers.authorization?.split(" ")[1];
+	let isAdmin = false;
+	if (token) {
+		const isAdminResponse = await fetch(`${process.env.BACKEND_URL}/api/auth/admin`, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+		if (isAdminResponse.ok) {
+			isAdmin = true;
+		}
+	}
 
 	const client = await pool.connect();
 	try {
@@ -81,7 +124,7 @@ router.post("/create", async (req, res) => {
                 ($1, $2, $3, $4, $5, $6, $7)
             RETURNING id
         `,
-			["student", user.email, user.firstname, user.lastname, user.telephone, user.username, hashedPassword]
+			[isAdmin ? user.role : "student", user.email, user.firstname, user.lastname, user.telephone, user.username, hashedPassword]
 		);
 
 		const userId = userResult.rows[0].id;
@@ -143,6 +186,44 @@ router.post("/login", async (req, res) => {
 	} catch (error) {
 		console.error("Login Error:", error);
 		return res.status(500).json({ error: "Internal Server Error" });
+	}
+});
+
+router.delete("/delete", async (req, res) => {
+	const token = req.headers.authorization?.split(" ")[1];
+	if (!token) {
+		return res.status(401).json({ error: "No token provided" });
+	}
+	const isAdminResponse = await fetch(`${process.env.BACKEND_URL}/api/auth/admin`, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	});
+	if (!isAdminResponse.ok) {
+		return res.status(403).json({ error: "access denied" });
+    }
+    
+	const user_id = req.body.user_id;
+	if (!user_id) return res.status(400).json({ message: "missing user_id" });
+
+	const client = await pool.connect();
+
+	try {
+		await client.query("BEGIN");
+
+		await client.query("DELETE FROM enrollment WHERE user_id = $1", [user_id]);
+		await client.query("DELETE FROM address WHERE user_id = $1", [user_id]);
+
+		await client.query('DELETE FROM "user" WHERE id = $1', [user_id]);
+
+        await client.query("COMMIT");
+        
+		res.status(200).json({ message: "User and related data deleted." });
+	} catch (err) {
+		await client.query("ROLLBACK");
+		res.status(500).json({ error: "Internal server error" });
+	} finally {
+		client.release();
 	}
 });
 

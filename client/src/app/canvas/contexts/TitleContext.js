@@ -4,7 +4,7 @@ import { createContext, useContext, useState } from "react";
 const TitleContext = createContext();
 
 export function TitleWrapper({ children }) {
-	const [title, setTitle] = useState("The Title");
+	const [title, setTitle] = useState("");
 
 	// Provide both the value and the updater function
 	const contextValue = {
