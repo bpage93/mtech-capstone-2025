@@ -201,8 +201,8 @@ router.delete("/delete", async (req, res) => {
 	});
 	if (!isAdminResponse.ok) {
 		return res.status(403).json({ error: "access denied" });
-    }
-    
+	}
+
 	const user_id = req.body.user_id;
 	if (!user_id) return res.status(400).json({ message: "missing user_id" });
 
@@ -216,14 +216,47 @@ router.delete("/delete", async (req, res) => {
 
 		await client.query('DELETE FROM "user" WHERE id = $1', [user_id]);
 
-        await client.query("COMMIT");
-        
+		await client.query("COMMIT");
+
 		res.status(200).json({ message: "User and related data deleted." });
 	} catch (err) {
 		await client.query("ROLLBACK");
 		res.status(500).json({ error: "Internal server error" });
 	} finally {
 		client.release();
+	}
+});
+
+router.get("/self", async (req, res) => {
+	const token = req.headers.authorization?.split(" ")[1];
+	if (!token) return res.status(400).json({ error: "Missing token" });
+
+	try {
+		const { userId } = jwt.verify(token, process.env.JWT_SECRET);
+
+		try {
+			const userSearchResult = await query(
+				`
+                SELECT
+                    u.email,
+                    u.firstname,
+                    u.lastname,
+                    u.telephone,
+                    u.username
+                FROM "user" u
+                WHERE u.id = $1 
+            `,
+				[userId]
+			);
+			if (userSearchResult.rows.length === 0) return res.status(401).json({ error: "Couldn't find user" });
+			const user = userSearchResult.rows[0];
+
+			return res.status(200).json({ user });
+		} catch (error) {
+			return res.status(500).json({ error: "Internal server error" });
+		}
+	} catch {
+		res.status(401).json({ error: "Invalid token", token });
 	}
 });
 

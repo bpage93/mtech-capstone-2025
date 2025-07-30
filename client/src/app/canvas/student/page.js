@@ -53,7 +53,7 @@ function CourseCard({ course }) {
 	const router = useRouter();
 
 	return (
-		<div className="w-full h-50 bg-indigo-950 rounded-lg p-3 flex flex-col text-left">
+		<div className="w-full h-50 bg-indigo-950 rounded-lg p-3 flex flex-col">
 			<h4 className="text-2xl font-semibold truncate text-indigo-100 min-h-fit hover:underline hover:cursor-pointer" onClick={() => router.push(`${window.location.origin}/canvas/courses/${course.id}`)}>
 				{course.title}
 			</h4>

@@ -6,7 +6,7 @@ const router = express.Router();
 const USER_PERMISSIONS = {
 	"/canvas/student": ["student"],
 	"/canvas/admin": ["admin"],
-	"/canvas/settings": ["student", "admin"],
+	"/canvas/profile": ["student", "admin"],
 	"/canvas/messages": ["student", "admin"],
 	"/canvas/assignments": ["student", "admin"],
 	"/canvas/courses": ["student", "admin"],

@@ -8,7 +8,7 @@ export default function AssignmentsPage() {
     const [assignments, setAssignments] = useState([]);
 
     useEffect(() => {
-        updateTitle("📝 Assignments");
+        updateTitle("Assignments");
 
         setAssignments([
             {

@@ -11,7 +11,7 @@ export default function Sidebar() {
 		courses: "/canvas/courses",
 		assignments: "/canvas/assignments",
 		messages: "/canvas/messages",
-		settings: "/canvas/settings",
+		profile: "/canvas/profile",
 	};
 
 	return (
@@ -28,8 +28,8 @@ export default function Sidebar() {
 			<NavButton svgPath="/svgs/chat.svg" altTitle="Go to messages" route={routes.messages} currentRoute={currentRoute}>
 				Messages
 			</NavButton>
-			<NavButton svgPath="/svgs/settings.svg" altTitle="Go to settings" route={routes.settings} currentRoute={currentRoute}>
-				Settings
+			<NavButton svgPath="/svgs/account_circle.svg" altTitle="Go to user profile" route={routes.profile} currentRoute={currentRoute}>
+				Profile
 			</NavButton>
 		</div>
 	);
