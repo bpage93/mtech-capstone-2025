@@ -134,7 +134,7 @@ function CourseCard({ course, enrolledCourses, unenrollFromCourse, enrollToCours
 				<span className="truncate">{course.schedule}</span>
 				<span className="truncate">{course.classroom_number}</span>
 			</div>
-			<p className="line-clamp-4 text-gray-400">{course.description}</p>
+			<p className={`${user.role === "student" ? "line-clamp-4" : "line-clamp-5"} text-gray-400`}>{course.description}</p>
 			{user.role === "student" && (
 				<div className="flex justify-center">
 					{!enrolled && (
