@@ -260,4 +260,38 @@ router.get("/self", async (req, res) => {
 	}
 });
 
+router.patch("/self/update", async (req, res) => {
+	const token = req.headers.authorization?.split(" ")[1];
+	if (!token) return res.status(400).json({ error: "Missing token" });
+	const { user } = req.body;
+	if (!user) return res.status(400).json({ error: "Missing user" });
+
+	let userId;
+
+	try {
+		const decoded = jwt.verify(token, process.env.JWT_SECRET);
+		userId = decoded.userId;
+	} catch (error) {
+		return res.status(401).json({ error: "Invalid token" });
+	}
+	try {
+		await query(
+			`
+            UPDATE "user"
+            SET email = $1,
+                firstname = $2,
+                lastname = $3,
+                telephone = $4,
+                username = $5
+            WHERE id = $6
+            RETURNING *;
+        `,
+			[user.email, user.firstname, user.lastname, user.telephone, user.username, userId]
+		);
+		return res.status(200).json({ message: "Successfully updated user" });
+	} catch (error) {
+		return res.status(500).json({ error: "Failed to update user" });
+	}
+});
+
 module.exports = router;
