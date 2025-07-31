@@ -242,7 +242,8 @@ router.get("/self", async (req, res) => {
                     u.firstname,
                     u.lastname,
                     u.telephone,
-                    u.username
+                    u.username,
+                    u.password
                 FROM "user" u
                 WHERE u.id = $1 
             `,
@@ -274,20 +275,39 @@ router.patch("/self/update", async (req, res) => {
 	} catch (error) {
 		return res.status(401).json({ error: "Invalid token" });
 	}
+
 	try {
-		await query(
-			`
-            UPDATE "user"
-            SET email = $1,
-                firstname = $2,
-                lastname = $3,
-                telephone = $4,
-                username = $5
-            WHERE id = $6
-            RETURNING *;
-        `,
-			[user.email, user.firstname, user.lastname, user.telephone, user.username, userId]
-		);
+		if (user.password) {
+			const hashedPassword = await bcrypt.hash(user.password, saltRounds);
+			await query(
+				`
+                    UPDATE "user"
+                    SET email = $1,
+                        firstname = $2,
+                        lastname = $3,
+                        telephone = $4,
+                        username = $5,
+                        password = $6
+                    WHERE id = $7
+                    RETURNING *;
+                `,
+				[user.email, user.firstname, user.lastname, user.telephone, user.username, hashedPassword, userId]
+			);
+		} else {
+			await query(
+				`
+                    UPDATE "user"
+                    SET email = $1,
+                        firstname = $2,
+                        lastname = $3,
+                        telephone = $4,
+                        username = $5
+                    WHERE id = $6
+                    RETURNING *;
+                `,
+				[user.email, user.firstname, user.lastname, user.telephone, user.username, userId]
+			);
+		}
 		return res.status(200).json({ message: "Successfully updated user" });
 	} catch (error) {
 		return res.status(500).json({ error: "Failed to update user" });

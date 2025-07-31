@@ -15,6 +15,7 @@ export default function SettingsPage() {
 	const [user, setUser] = useState();
 	const [editingField, setEditingField] = useState();
 	const [editingFieldValue, setEditingFieldValue] = useState();
+	const [newPassword, setNewPassword] = useState("");
 	const router = useRouter();
 
 	useEffect(() => {
@@ -61,17 +62,26 @@ export default function SettingsPage() {
 
 	async function saveUser() {
 		setLoading(true);
-		console.log(token);
-		const updateResponse = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/self/update`, {
+
+		const updatedUser = {
+			...user,
+			...{ password: newPassword },
+		};
+
+		console.log({ updatedUser });
+
+		await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/users/self/update`, {
 			method: "PATCH",
 			headers: {
 				"Content-Type": "application/json",
 				authorization: `Bearer ${token}`,
 			},
 			body: JSON.stringify({
-				user,
+				user: updatedUser,
 			}),
 		});
+
+		setNewPassword("");
 		setLoading(false);
 	}
 
@@ -94,11 +104,25 @@ export default function SettingsPage() {
 							<div className="grid grid-cols-1 lg:grid-cols-2 gap-y-4 gap-x-2">
 								{user &&
 									Object.entries(user).map(([field, value]) => {
+										const isPasswordField = field === "password";
 										return (
 											<div key={field} className="flex justify-between items-center min-w-fit w-full shadow/30 bg-indigo-950/40 rounded-lg hover:bg-indigo-950 border-b border-b-white/5 p-3">
 												<div className="flex flex-col text-lg h-full shrink">
-													<h6 className="text-gray-400 truncate">{field}</h6>
-													{field === editingField ? <input id="editing-value" value={editingFieldValue} onChange={(e) => setEditingFieldValue(e.target.value)} onBlur={() => setEditingField(null)} /> : <span className="truncate">{value}</span>}
+													<h6 className="text-gray-400 truncate">{isPasswordField ? "new password" : field}</h6>
+													{field === editingField ? (
+														<input
+															id="editing-value"
+															placeholder={field}
+															value={isPasswordField ? newPassword : editingFieldValue}
+															onChange={(e) => {
+																if (!isPasswordField) setEditingFieldValue(e.target.value);
+																else setNewPassword(e.target.value);
+															}}
+															onBlur={() => setEditingField(null)}
+														/>
+													) : (
+														<span className="truncate">{isPasswordField ? newPassword : value}</span>
+													)}
 												</div>
 
 												<button
@@ -106,7 +130,7 @@ export default function SettingsPage() {
 													aria-label="Edit this value"
 													onClick={() => {
 														setEditingField(field);
-														setEditingFieldValue(value);
+														setEditingFieldValue(isPasswordField ? "" : value);
 													}}
 												>
 													<img src="/svgs/edit.svg" alt="" />
