@@ -45,7 +45,6 @@ router.get("/view", async (req, res) => {
                 address.city AS address_city,
                 address.state AS address_state,
                 address.zip AS address_zip,
-                enrollment.id AS enrollment_id,
                 enrollment.course_id AS enrollment_course_id
             FROM "user" usr
             JOIN address ON usr.id = address.user_id
@@ -56,6 +55,19 @@ router.get("/view", async (req, res) => {
         `,
 			[usersPerPage, offset]
 		);
+
+		if (userResults.rows.length === 0) {
+			return res.status(200).json({
+				data: [],
+				pagination: {
+					current_page: page,
+					total_pages: maxPage,
+					has_next_page: page < maxPage,
+					has_prev_page: page > 1,
+				},
+			});
+		}
+
 		const modifiedData = userResults.rows.map((row) => {
 			const wrapped = {};
 			for (const [key, value] of Object.entries(row)) {

@@ -233,7 +233,7 @@ export default function AdminTable({ data, setData, currentPage, setCurrentPage,
 		setEditButtonsDisabled(false);
 	}, [editing, creating]);
 
-	return !data || data?.length === 0 ? (
+	return !data ? (
 		<Loading />
 	) : editing || creating ? (
 		<EditTableData data={data} selectedData={selectedData} setCreating={setCreating} editing={editing} setEditing={setEditing} handleSaveChanges={handleSaveChanges} editButtonsDisabled={editButtonsDisabled} setEditButtonsDisabled={setEditButtonsDisabled} showWarning={showWarning} setShowWarning={setShowWarning} warning={warning} setWarning={setWarning} handleTableCreation={handleTableCreation} handleSingleTableDeletion={handleSingleTableDeletion} />
