@@ -6,7 +6,6 @@ const passport = require("passport");
 const session = require("express-session");
 const morgan = require("morgan");
 const winston = require("winston");
-const { Strategy: GoogleStrategy } = require("passport-google-oauth20");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -45,22 +44,6 @@ app.get("/api", (req, res) => {
 	res.json({ message: "Hello from server!" });
 });
 
-// Google OAuth routes
-app.get("/api/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-
-app.get(
-	"/api/auth/google/callback",
-	passport.authenticate("google", {
-		failureRedirect: "/login",
-		session: false,
-	}),
-	(req, res) => {
-		// You can generate JWT and send it here instead
-		res.redirect(`${FRONTEND_URL}/canvas/student`); // or pass token in query string
-	}
-);
-
-// Start server
 app.listen(PORT, () => {
 	console.log(`Server listening on http://localhost:${PORT}`);
 });

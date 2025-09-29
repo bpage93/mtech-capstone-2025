@@ -5,10 +5,10 @@ dotenv.config();
 // Required SSL configuration
 const pool = new Pool({
 	connectionString: process.env.DATABASE_URL,
-	// ssl: {
-	// 	rejectUnauthorized: false,
-	// },
-	ssl: false, // Set to false when working on a locally hosted database
+	ssl: {
+		rejectUnauthorized: false,
+	},
+	// ssl: false, // Set to false when working on a locally hosted database
 });
 
 module.exports = {
