@@ -7596,3 +7596,10 @@
 {"level":"http","message":"::1 - - [29/Sep/2025:16:11:30 +0000] \"GET /api/auth/admin HTTP/1.1\" 403 25 \"-\" \"node\""}
 {"level":"http","message":"::1 - - [29/Sep/2025:16:11:30 +0000] \"POST /api/auth/token/user_id HTTP/1.1\" 200 13 \"-\" \"node\""}
 {"level":"http","message":"::1 - - [29/Sep/2025:16:11:31 +0000] \"GET /api/courses/view/enrolled HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0\""}
+{"level":"http","message":"::1 - - [29/Sep/2025:16:17:04 +0000] \"GET /api/auth/token?route=/ HTTP/1.1\" 403 25 \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0\""}
+{"level":"http","message":"::1 - - [29/Sep/2025:16:17:10 +0000] \"POST /api/users/login HTTP/1.1\" 200 199 \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0\""}
+{"level":"http","message":"::1 - - [29/Sep/2025:16:17:10 +0000] \"GET /api/auth/token?route=/canvas/admin HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0\""}
+{"level":"http","message":"::1 - - [29/Sep/2025:16:17:10 +0000] \"GET /api/auth/admin HTTP/1.1\" 200 30 \"-\" \"node\""}
+{"level":"http","message":"::1 - - [29/Sep/2025:16:17:10 +0000] \"GET /api/users/view?page=1 HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0\""}
+{"level":"http","message":"::1 - - [29/Sep/2025:16:17:10 +0000] \"GET /api/auth/admin HTTP/1.1\" 200 30 \"-\" \"node\""}
+{"level":"http","message":"::1 - - [29/Sep/2025:16:17:11 +0000] \"GET /api/users/view?page=1 HTTP/1.1\" 304 - \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36 Edg/140.0.0.0\""}
